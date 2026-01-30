@@ -1,0 +1,7 @@
+name = "os-click-laser"
+compatibility_date = "2026-01-30"
+main = "index.js"
+
+[[r2_buckets]]
+binding = "R2_OS"
+bucket_name = "os-click-laser"
