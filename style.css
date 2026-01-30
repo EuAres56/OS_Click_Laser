@@ -163,11 +163,110 @@ button:hover {
 }
 
 
+#printArea,
+#printArea * {
+    visibility: visible;
+    color: #000;
+}
+
+#printArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: block !important;
+    width: 72mm;
+    padding: 4mm;
+    font-family: 'Courier New', Courier, monospace;
+    color: black;
+}
+
+#printArea {
+    min-height: auto;
+    height: auto;
+    overflow: visible;
+}
+
+.detalhe {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.os-print {
+    page-break-after: always;
+    font-size: 11pt;
+    color: #000;
+}
+
+.os-print h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.os-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.linha {
+    border-bottom: 1px dashed #000;
+    margin: 10px 0;
+}
+
+#printArea h1 {
+    font-size: 14pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+#printArea h2 {
+    font-size: 20px;
+}
+
+.nome-header {
+    font-size: 14pt;
+    font-weight: lighter;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.nome-destaque {
+    font-size: 24pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 15px 0;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    /* Mantém o formato exato digitado */
+}
+
+
+.form-container {
+    display: none;
+}
+
+
+.obs-box {
+    font-size: 10pt;
+    margin-top: 10px;
+    border: 1px solid black;
+    padding: 8px;
+    min-height: 40px;
+    white-space: pre-wrap;
+}
+
+.rodape_print {
+    font-size: 10pt;
+    margin-top: 10px;
+    text-align: center;
+}
 
 @media print {
     @page {
         margin: 0;
-        size: 80mm auto;
+        size: 75mm auto;
     }
 
     body {
@@ -178,105 +277,5 @@ button:hover {
 
     body * {
         visibility: hidden;
-        color: #000;
-    }
-
-    #printArea,
-    #printArea * {
-        visibility: visible;
-    }
-
-    #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        display: block !important;
-        width: 72mm;
-        padding: 4mm;
-        font-family: 'Courier New', Courier, monospace;
-        color: black;
-    }
-
-    #printArea {
-        min-height: auto;
-        height: auto;
-        overflow: visible;
-    }
-
-    .detalhe {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .os-print {
-        page-break-after: always;
-        font-size: 11pt;
-        color: #000;
-    }
-
-    .os-print h2 {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .os-header {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .linha {
-        border-bottom: 1px dashed #000;
-        margin: 10px 0;
-    }
-
-    #printArea h1 {
-        font-size: 14pt;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 5px;
-    }
-
-    #printArea h2 {
-        font-size: 20px;
-    }
-
-    .nome-header {
-        font-size: 14pt;
-        font-weight: lighter;
-        text-align: center;
-        margin: 15px 0;
-    }
-
-    .nome-destaque {
-        font-size: 24pt;
-        font-weight: bold;
-        text-align: center;
-        margin: 15px 0;
-        word-wrap: break-word;
-        white-space: pre-wrap;
-        /* Mantém o formato exato digitado */
-    }
-
-
-    .form-container {
-        display: none;
-    }
-
-
-    .obs-box {
-        font-size: 10pt;
-        margin-top: 10px;
-        border: 1px solid black;
-        padding: 8px;
-        min-height: 40px;
-        white-space: pre-wrap;
-    }
-
-    .rodape_print {
-        font-size: 10pt;
-        margin-top: 10px;
-        text-align: center;
     }
 }

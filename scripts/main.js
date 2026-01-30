@@ -264,24 +264,21 @@ async function gerarPDFdoHTML(tipo) {
         .outputPdf("blob");
 
     await enviarPDFParaNuvem(pdfBlob, nomeArquivo);
+
 }
 
 async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
     const formData = new FormData();
     formData.append("file", pdfBlob, nomeArquivo);
 
-    const response = await fetch(
-        "https://os-click-laser.mitosobr.workers.dev/",
+    const res = await fetch(
+        "https://os-click-laser.mitosobr.workers.dev/upload",
         {
             method: "POST",
             body: formData
         }
     );
 
-    if (!response.ok) {
-        const txt = await response.text();
-        throw new Error(`Erro ${response.status}: ${txt}`);
-    }
-
-    return response.json();
+    const data = await res.json();
+    return data.url; // ← LINK DO PDF
 }
