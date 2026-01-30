@@ -264,8 +264,8 @@ button:hover {
         width: 72mm;
         padding: 4mm;
         font-family: 'Courier New', Courier, monospace;
-        color: black;
         min-height: auto;
+        color: black;
         height: auto;
         overflow: visible;
     }
