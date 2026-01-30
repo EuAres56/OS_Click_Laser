@@ -1,0 +1,277 @@
+/* TOGGLE */
+const toggle = document.getElementById('osToggle');
+const tabs = document.querySelectorAll('.tab');
+
+toggle.querySelectorAll('a').forEach(btn => {
+    btn.onclick = e => {
+        e.preventDefault();
+        toggle.querySelectorAll('a').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        tabs.forEach(t => t.classList.remove('active'));
+
+        if (btn.dataset.tab === 'pack') {
+            toggle.classList.add('second-active');
+            document.querySelector('.tab-pack').classList.add('active');
+        } else {
+            toggle.classList.remove('second-active');
+            document.querySelector('.tab-single').classList.add('active');
+        }
+    }
+});
+
+// GERADOR DE HTML (monta o html para impressão)
+function create_print_html(p_data, p_hora, p_item, p_fig, p_fonte, p_entrega, p_nome, p_obs, p_orig) {
+
+    const print_area = `
+            <div class="os-header">
+                <h2>ORDEM DE SERVIÇO <br> PARA GRAVAÇÃO</h2>
+            </div>
+            <div class="linha"></div>
+
+            <div class="detalhes">
+            <div class="detalhe">
+                <strong class="header_print">DATA:</strong> ${p_data}<br>
+            </div>
+            <div class="detalhe">
+                <strong class="header_print">HORA:</strong> ${p_hora}<br>
+            </div>
+            <div class="detalhe">
+                <strong class="header_print">ORIGEM:</strong> ${p_orig}<br>
+            </div>
+            <div class="detalhe">
+                <strong class="info_print">ENTREGAR:</strong> ${p_entrega}<br>
+            </div>
+            </div>
+
+            <div class="linha"></div>
+
+            <div class="detalhe">
+                <strong class="info_print">ITEM:</strong> ${p_item}<br>
+            </div>
+            <div class="detalhe">
+                <strong class="info_print">FIGURA:</strong> ${p_fig}<br>
+            </div>
+            <div class="detalhe">
+                <strong class="info_print">FONTE:</strong> ${p_fonte}<br>
+            </div>
+            <div class="linha"></div>
+
+            <p class="nome-header">CONTEUDO DO NOME:</p>
+            <h3 class="nome-destaque">${p_nome}</h3>
+
+            <div class="linha"></div>
+
+            <strong>OBSERVAÇÕES:</strong>
+            <p class="obs-box">${p_obs}</p>
+
+            <div class="linha"></div>
+            <div class="rodape_print">PRODUÇÃO LOCAL</div>
+
+        `;
+    return print_area;
+}
+
+// IMPRIME OS UNICA
+function print_single() {
+    const print_area = document.getElementById('printArea');
+
+    const inputNome = document.getElementById('nome');
+    const nome = inputNome.value;
+
+    if (!nome.trim()) {
+        alert("Por favor, preencha o nome para gravação.");
+        inputNome.focus();
+        return;
+    }
+
+    // Captura data e hora
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-br');
+    const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
+
+    // Alimenta o cupom (Preservando maiúsculas e minúsculas)
+    const item = document.getElementById('item').value;
+    const fonte = document.getElementById('fonte').value;
+    const entrega = (document.getElementById('dataEntrega').value).split('-').reverse().join('/') || data;
+    const figura = document.getElementById('figura').value || "NENHUMA";
+    const obs = document.getElementById('obs').value || "-";
+    const orig = document.getElementById('origem').value;
+
+    // Gera o HTML com os dados capturados
+    const html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+
+    print_area.innerHTML = html;
+
+    // 🔽 AQUI: converte esse HTML pronto em PDF
+    gerarPDFdoHTML("single");
+
+    // impressão continua normal
+    setTimeout(() => window.print(), 100);
+}
+
+
+/* GERAR PACOTE */
+function print_pack() {
+    const print_area = document.getElementById('printArea');
+
+
+    // Captura data e hora
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-br');
+    const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
+
+    // Alimenta o cupom (Preservando maiúsculas e minúsculas)
+    const item = document.getElementById('itemPack').value;
+    const fonte = document.getElementById('fontePack').value;
+    const entrega = (document.getElementById('dataEntregaPack').value).split('-').reverse().join('/') || data;
+    const figura = document.getElementById('figuraPack').value || "NENHUMA";
+    const obs = document.getElementById('obsPack').value || "-";
+    const orig = document.getElementById('origemPack').value;
+
+    const nomes = document.getElementById('nomesPack').value;
+
+    const lista_nomes = nomes
+        .split(/\r?\n/)      // divide por linha (Windows, Linux, Mac)
+        .map(l => l.trim())  // remove espaços extras
+        .filter(l => l);     // remove linhas vazias
+
+    let html = '';
+    lista_nomes.forEach(nome => {
+        if (html != '') {
+            html += `
+            <div class="linha"></div>
+            <p>PRÓXIMA GRAVAÇÃO</p>
+            <div class="linha"></div>
+            `;
+        }
+        // Gera o HTML com os dados capturados
+        html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+    });
+
+    print_area.innerHTML = html;
+    // 🔽 AQUI: converte esse HTML pronto em PDF
+    gerarPDFdoHTML("pack");
+
+    // Chama a janela de impressão
+    setTimeout(() => window.print(), 100);
+}
+
+
+
+// CARREGA EXEMPLO DE FONTE
+const fontes = [
+    { nome: "NOKA TRIAL", arquivo: "NOKA TRIAL.otf" },
+    { nome: "JOSEPH SOPHIA", arquivo: "JOSEPH SOPHIA.ttf" },
+    { nome: "ROMANTIC DATES", arquivo: "ROMANTIC DATES.ttf" },
+    { nome: "THE KING OF ROMANCE", arquivo: "THE KING OF ROMANCE.ttf" },
+    { nome: "CHARLOTTE", arquivo: "CHARLOTTE.otf" }
+];
+
+const selectFonte = document.getElementById("fonte");
+const selectFonte_pack = document.getElementById("fontePack");
+const exemplo = document.querySelector(".exemploFonte");
+const exemplo_pack = document.querySelector(".exemploFontePack");
+
+
+// Registra fontes dinamicamente
+function carregarFontes() {
+    const style = document.createElement("style");
+
+    fontes.forEach(f => {
+        style.innerHTML += `
+                @font-face {
+                    font-family: '${f.nome}';
+                    src: url('./fonts/${f.arquivo}');
+                }
+            `;
+
+        const option = document.createElement("option");
+        option.value = f.nome;
+        option.textContent = f.nome;
+        selectFonte.appendChild(option);
+
+        const option_pack = document.createElement("option");
+        option_pack.value = f.nome;
+        option_pack.textContent = f.nome;
+        selectFonte_pack.appendChild(option_pack);
+
+    });
+
+    document.head.appendChild(style);
+}
+
+// Aplica fonte no exemplo
+selectFonte.addEventListener("change", () => {
+    exemplo.style.fontFamily = selectFonte.value;
+    exemplo.textContent = "Teste de Fonte Click Phone";
+});
+selectFonte_pack.addEventListener("change", () => {
+    exemplo_pack.style.fontFamily = selectFonte_pack.value;
+    exemplo_pack.textContent = "Teste de Fonte Click Phone";
+});
+
+// Inicializa
+window.addEventListener("load", () => {
+    carregarFontes();
+    // Define fonte inicial
+    selectFonte.selectedIndex = 0;
+    exemplo.style.fontFamily = selectFonte.value;
+    exemplo.textContent = "Teste de Fonte Click Phone";
+
+    selectFonte_pack.selectedIndex = 0;
+    exemplo_pack.style.fontFamily = selectFonte_pack.value;
+    exemplo_pack.textContent = "Teste de Fonte Click Phone";
+});
+
+
+// ENVIAR OS PARA A NUVEM
+
+async function gerarPDFdoHTML(tipo) {
+    const printArea = document.getElementById("printArea");
+
+    // garante que o layout já foi renderizado
+    await new Promise(r => setTimeout(r, 50));
+
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, "0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+
+    const nomeArquivo = `${tipo}_${dd}_${mm}_${yyyy}__${hh}_${min}.pdf`;
+
+    const opt = {
+        margin: 8,
+        filename: nomeArquivo,
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff"
+        },
+        jsPDF: {
+            unit: "mm",
+            format: "a4",
+            orientation: "portrait"
+        }
+    };
+
+    const pdfBlob = await html2pdf()
+        .set(opt)
+        .from(printArea)
+        .outputPdf("blob");
+
+    await enviarPDFParaNuvem(pdfBlob, nomeArquivo);
+}
+
+async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
+    const formData = new FormData();
+    formData.append("file", pdfBlob, nomeArquivo);
+
+    await fetch("os-click-laser.mitosobr.workers.dev", {
+        method: "POST",
+        body: formData
+    });
+}

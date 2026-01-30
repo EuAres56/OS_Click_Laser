@@ -1,0 +1,282 @@
+/* ====== GERAL ====== */
+:root {
+    --purple-main: #5c0b5c;
+    /* roxo da logo */
+    --purple-accent: #a713cc;
+    /* roxo vivo */
+    --gold-accent: #ff9f0a;
+    /* dourado da logo */
+
+    --bg-main: #f2f2f2;
+    --bg-card: #ffffff;
+    --bg-input: #f7f7f7;
+
+    --text-main: #1f1f1f;
+    --text-muted: #6b6b6b;
+}
+
+
+/* ====== BASE ====== */
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: linear-gradient(180deg, #ececec, #f7f7f7);
+    color: var(--text-main);
+}
+
+.form-container {
+    max-width: 460px;
+    margin: 40px auto;
+    background: var(--bg-card);
+    padding: 28px;
+    border-radius: 18px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, .08);
+}
+
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--purple-main);
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 25px;
+    font-size: 16px;
+    color: var(--purple-main);
+}
+
+label {
+    font-size: 11px;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    margin-top: 14px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 11px 12px;
+    margin-top: 6px;
+    background: var(--bg-input);
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: .25s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--purple-accent);
+    box-shadow: 0 0 0 3px rgba(167, 19, 204, .15);
+}
+
+button {
+    margin-top: 28px;
+    padding: 14px;
+    width: 100%;
+    background: linear-gradient(135deg,
+            var(--purple-main),
+            var(--purple-accent));
+    border-radius: 14px;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(92, 11, 92, .25);
+}
+
+/* ====== TOGGLE ====== */
+.toggle {
+    display: flex;
+    background: #e6e6e6;
+    border-radius: 999px;
+    padding: 4px;
+    margin: 20px 0;
+    position: relative;
+}
+
+.toggle a {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--text-muted);
+    z-index: 1;
+}
+
+.toggle a.active {
+    color: #fff;
+}
+
+.toggle::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: linear-gradient(135deg,
+            var(--purple-main),
+            var(--purple-accent));
+    border-radius: 999px;
+    transition: .35s cubic-bezier(.4, 0, .2, 1);
+}
+
+.toggle.second-active::before {
+    transform: translateX(100%);
+}
+
+/* ====== EXEMPLO ====== */
+.font_exe {
+    font-size: 30px;
+    line-height: 60px;
+    color: var(--text-muted);
+    margin-top: 10px;
+}
+
+/* ====== ABAS ====== */
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+}
+
+
+
+@media print {
+    @page {
+        margin: 0;
+        size: 80mm auto;
+    }
+
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    body * {
+        visibility: hidden;
+        color: #000;
+    }
+
+    #printArea,
+    #printArea * {
+        visibility: visible;
+    }
+
+    #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: block !important;
+        width: 72mm;
+        padding: 4mm;
+        font-family: 'Courier New', Courier, monospace;
+        color: black;
+    }
+
+    #printArea {
+        min-height: auto;
+        height: auto;
+        overflow: visible;
+    }
+
+    .detalhe {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .os-print {
+        page-break-after: always;
+        font-size: 11pt;
+        color: #000;
+    }
+
+    .os-print h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .os-header {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .linha {
+        border-bottom: 1px dashed #000;
+        margin: 10px 0;
+    }
+
+    #printArea h1 {
+        font-size: 14pt;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    #printArea h2 {
+        font-size: 20px;
+    }
+
+    .nome-header {
+        font-size: 14pt;
+        font-weight: lighter;
+        text-align: center;
+        margin: 15px 0;
+    }
+
+    .nome-destaque {
+        font-size: 24pt;
+        font-weight: bold;
+        text-align: center;
+        margin: 15px 0;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        /* Mantém o formato exato digitado */
+    }
+
+
+    .form-container {
+        display: none;
+    }
+
+
+    .obs-box {
+        font-size: 10pt;
+        margin-top: 10px;
+        border: 1px solid black;
+        padding: 8px;
+        min-height: 40px;
+        white-space: pre-wrap;
+    }
+
+    .rodape_print {
+        font-size: 10pt;
+        margin-top: 10px;
+        text-align: center;
+    }
+}

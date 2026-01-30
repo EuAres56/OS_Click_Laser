@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br" translate="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Click Laser</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="src/index.js"></script>
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Click Laser</h1>
+        <h3>Produção de Ordem de Serviço</h3>
+
+        <div class="toggle" id="osToggle">
+            <a href="#" data-tab="single" class="active">Pedido único</a>
+            <a href="#" data-tab="pack">Pacote</a>
+        </div>
+
+        <!-- SINGLE -->
+        <div class="tab tab-single active">
+            <label for="origem">ORIGEM DO PEDIDO:</label>
+            <select id="origem">
+                <option value="ANUNCIO">Anuncio</option>
+                <option value="PRESENCIAL">Presencial</option>
+                <option value="CLIENTE">Já era cliente</option>
+            </select>
+
+
+            <label for="item">ITEM:</label>
+            <input type="text" id="item" placeholder="Garrafa azul brilhante, Copo rosa fosco...">
+
+            <label for="nome">NOME PARA GRAVAÇÃO:</label>
+            <input type="text" id="nome" placeholder="Digite exatamente como deseja gravar...">
+
+            <label for="fonte">FONTE:</label>
+            <select id="fonte">
+            </select>
+            <label class="exemploFonte font_exe" for="">Exemplo</label>
+            <br>
+            <label for="figura">FIGURA:</label>
+            <input type="text" id="figura" placeholder="Ex: Coração, Estrela, Logo...">
+
+            <label>PEDIDO PARA (DATA DE ENTREGA):</label>
+            <input type="date" id="dataEntrega">
+
+            <label for="obs">OBSERVAÇÕES:</label>
+            <textarea id="obs" placeholder="Algum detalhe importante para a produção?"></textarea>
+
+            <button onclick="print_single()">FINALIZAR E IMPRIMIR</button>
+        </div>
+
+        <!-- PACOTE -->
+        <div class="tab tab-pack">
+
+            <label for="origemPack">ORIGEM DO PEDIDO:</label>
+            <select id="origemPack">
+                <option value="ANUNCIO">Anuncio</option>
+                <option value="PRESENCIAL">Presencial</option>
+                <option value="CLIENTE">Já era cliente</option>
+            </select>
+
+            <label for="itemPack">ITEM:</label>
+            <input id="itemPack" placeholder="Garrafa azul brilhante, Copo rosa fosco...">
+
+            <label for="figuraPack">FIGURA OU LOGO:</label>
+            <input id="figuraPack" placeholder="Ex: Coração, Estrela, Logo...">
+
+            <label for="fontePack">FONTE:</label>
+            <select id="fontePack">
+            </select>
+            <label class="exemploFontePack font_exe">Exemplo</label>
+            <br>
+            <label>NOMES (um por linha):</label>
+            <textarea id="nomesPack" rows="6"></textarea>
+
+            <label>PEDIDO PARA (DATA DE ENTREGA):</label>
+            <input type="date" id="dataEntregaPack">
+
+            <label for="obsPack">OBSERVAÇÕES:</label>
+            <textarea id="obsPack" placeholder="Algum detalhe importante para a produção?"></textarea>
+
+            <button onclick="print_pack()">FINALIZAR E IMPRIMIR PACOTE</button>
+        </div>
+
+    </div>
+
+    <div id="printArea"></div>
+
+    <script src="./scripts/main.js"></script>
+
+</body>
+
+</html>
