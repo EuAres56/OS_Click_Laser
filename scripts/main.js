@@ -270,8 +270,18 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
     const formData = new FormData();
     formData.append("file", pdfBlob, nomeArquivo);
 
-    await fetch("os-click-laser.mitosobr.workers.dev", {
-        method: "POST",
-        body: formData
-    });
+    const response = await fetch(
+        "https://os-click-laser.mitosobr.workers.dev",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    if (!response.ok) {
+        const texto = await response.text();
+        throw new Error(`Erro no upload: ${response.status} - ${texto}`);
+    }
+
+    return response.json();
 }
