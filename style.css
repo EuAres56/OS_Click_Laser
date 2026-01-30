@@ -233,6 +233,16 @@ button:hover {
     text-align: center;
 }
 
+
+#printArea {
+    width: 80mm;
+    padding: 4mm;
+    font-family: 'Courier New', Courier, monospace;
+    min-height: auto;
+    color: black;
+    height: auto;
+}
+
 @media print {
     @page {
         margin: 0;
@@ -259,13 +269,9 @@ button:hover {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100%;
         display: block !important;
-        width: 72mm;
-        padding: 4mm;
         font-family: 'Courier New', Courier, monospace;
         min-height: auto;
-        color: black;
         height: auto;
         overflow: visible;
     }
