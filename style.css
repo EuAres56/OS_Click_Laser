@@ -163,30 +163,6 @@ button:hover {
 }
 
 
-#printArea,
-#printArea * {
-    visibility: visible;
-    color: #000;
-}
-
-#printArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    display: block !important;
-    width: 72mm;
-    padding: 4mm;
-    font-family: 'Courier New', Courier, monospace;
-    color: black;
-}
-
-#printArea {
-    min-height: auto;
-    height: auto;
-    overflow: visible;
-}
-
 .detalhe {
     display: flex;
     flex-direction: row;
@@ -242,12 +218,6 @@ button:hover {
     /* Mantém o formato exato digitado */
 }
 
-
-.form-container {
-    display: none;
-}
-
-
 .obs-box {
     font-size: 10pt;
     margin-top: 10px;
@@ -266,7 +236,7 @@ button:hover {
 @media print {
     @page {
         margin: 0;
-        size: 75mm auto;
+        size: 80mm auto;
     }
 
     body {
@@ -277,5 +247,30 @@ button:hover {
 
     body * {
         visibility: hidden;
+        color: #000;
+    }
+
+    #printArea,
+    #printArea * {
+        visibility: visible;
+    }
+
+    #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: block !important;
+        width: 72mm;
+        padding: 4mm;
+        font-family: 'Courier New', Courier, monospace;
+        color: black;
+        min-height: auto;
+        height: auto;
+        overflow: visible;
+    }
+
+    .form-container {
+        display: none;
     }
 }
