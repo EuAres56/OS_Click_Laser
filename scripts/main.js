@@ -292,8 +292,8 @@ async function gerarPDFdoHTML(tipo, print_area) {
     document.getElementById("linkPDF").textContent = linkPDF;
 
     // impressão continua normal
-    setTimeout(() => window.print(), 100);
-    setTimeout(() => print_area.innerHTML = "", 200);
+    setTimeout(() => window.print(), 200);
+    setTimeout(() => print_area.innerHTML = "", 300);
 
 }
 
