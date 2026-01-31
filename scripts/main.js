@@ -409,11 +409,6 @@ async function buscarOSPorData() {
         select_os.addEventListener("change", async () => {
             const novoStatus = Number(select_os.value);
 
-            console.log({
-                uid: os.uid,
-                status: novoStatus,
-                typeofStatus: typeof novoStatus
-            });
             try {
                 const res = await fetch(
                     "https://os-click-laser.mitosobr.workers.dev/update-status",
@@ -434,7 +429,6 @@ async function buscarOSPorData() {
                 }
 
                 const data = await res.json();
-                console.log("Status atualizado:", data);
 
             } catch (err) {
                 alert("Erro ao atualizar status da OS");

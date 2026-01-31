@@ -173,7 +173,6 @@ export default {
         if (request.method === "POST" && url.pathname === "/update-status") {
 
             const body = await request.json();
-            console.log("BODY RECEBIDO:", body);
             const { uid, status } = body;
 
             const statusNumber = Number(status);
