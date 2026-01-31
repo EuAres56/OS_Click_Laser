@@ -399,7 +399,7 @@ async function buscarOSPorData() {
 async function listarOS(dataSelecionada) {
     if (!dataSelecionada) {
         alert("Selecione uma data");
-        return = [];
+        return [];
     }
 
     try {
