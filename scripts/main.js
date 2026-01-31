@@ -101,10 +101,20 @@ function print_single() {
     // Gera o HTML com os dados capturados
     const html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
 
+    html += `
+        <div class="linha"></div>
+        <div class="linha"></div>
+        <canvas id="qrcode"></canvas>
+        <p style="font-size:10px">
+        https://os-click-laser.mitosobr.workers.dev/view/OS-1234.pdf
+        </p>
+    `
+
     print_area.innerHTML = html;
 
     // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
     gerarPDFdoHTML("single");
+
 
     // impressão continua normal
     setTimeout(() => window.print(), 100);
@@ -148,7 +158,14 @@ function print_pack() {
         // Gera o HTML com os dados capturados
         html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
     });
-
+    html += `
+        <div class="linha"></div>
+        <div class="linha"></div>
+        <canvas id="qrcode"></canvas>
+        <p style="font-size:10px">
+        https://os-click-laser.mitosobr.workers.dev/view/OS-1234.pdf
+        </p>
+    `
     print_area.innerHTML = html;
     // 🔽 AQUI: converte esse HTML pronto em PDF
     gerarPDFdoHTML("pack");
