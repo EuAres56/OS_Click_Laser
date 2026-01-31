@@ -107,6 +107,28 @@ button:hover {
     box-shadow: 0 8px 18px rgba(92, 11, 92, .25);
 }
 
+.fake-btn {
+    margin-top: 28px;
+    padding: 14px;
+    width: fit-content;
+    text-decoration: none;
+    background: linear-gradient(135deg,
+            var(--purple-main),
+            var(--purple-accent));
+    border-radius: 14px;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.fake-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(92, 11, 92, .25);
+}
+
 .btn_ico {
     width: fit-content;
     margin: 0;
@@ -215,10 +237,23 @@ button:hover {
     background-color: var(--bg-input);
     border-radius: 10px;
     padding: 10px;
-    color: var(--text-muted);
-    overflow-x: hidden;
     justify-content: space-between;
+    align-items: center;
 
+}
+
+.os-box select,
+.os-box select:active,
+.os-box select:focus {
+    padding: 0;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    color: var(--text-muted);
+    font-size: small;
+    gap: 0;
 }
 
 .os-box div {
@@ -239,7 +274,6 @@ button:hover {
     text-wrap: nowrap;
     color: var(--purple-main);
 }
-
 
 .detalhe {
     display: flex;

@@ -173,18 +173,13 @@ export default {
         if (request.method === "POST" && url.pathname === "/update-status") {
 
             const body = await request.json();
-            const { id, status } = body;
+            console.log("BODY RECEBIDO:", body);
+            const { uid, status } = body;
 
-            if (!id || status === undefined) {
-                return new Response(
-                    JSON.stringify({ error: "Dados inválidos" }),
-                    { status: 400, headers: corsHeaders }
-                );
-            }
+            const statusNumber = Number(status);
 
-            // valida status permitido
             const statusPermitidos = [0, 1, 2, 3];
-            if (!statusPermitidos.includes(status)) {
+            if (!Number.isInteger(statusNumber) || !statusPermitidos.includes(statusNumber)) {
                 return new Response(
                     JSON.stringify({ error: "Status inválido" }),
                     { status: 400, headers: corsHeaders }
@@ -192,7 +187,7 @@ export default {
             }
 
             const supabaseRes = await fetch(
-                `${env.SUPABASE_URL}/rest/v1/history_services_click_laser?id=eq.${id}`,
+                `${env.SUPABASE_URL}/rest/v1/history_services_click_laser?uid=eq.${uid}`,
                 {
                     method: "PATCH",
                     headers: {
@@ -201,9 +196,7 @@ export default {
                         "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
                         "Prefer": "return=minimal"
                     },
-                    body: JSON.stringify({
-                        status
-                    })
+                    body: JSON.stringify({ status: statusNumber })
                 }
             );
 
@@ -216,7 +209,7 @@ export default {
             }
 
             return new Response(
-                JSON.stringify({ status: "ok", id, new_status: status }),
+                JSON.stringify({ status: "ok", uid, new_status: status }),
                 { headers: { "Content-Type": "application/json", ...corsHeaders } }
             );
         }

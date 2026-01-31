@@ -363,14 +363,9 @@ function create_list_os_html(id, hora, tipo, origem, link) {
                     ORIGEM
                     <p>${origem}</p>
                 </div>
-                <div>
-                    <a href="href="${link}"">
-                        <i class="bi bi-eye"></i>
+                    <a class="fake-btn horizontal-div" href="${link}" target="_blank">
+                        <i class="bi bi-eye" style="color: white;"></i>
                     </a>
-                    <a href="href="${link}"">
-                        <i class="bi bi-eye"></i>
-                    </a>
-                </div>
             </div>
     `
 }
@@ -405,14 +400,20 @@ async function buscarOSPorData() {
             os.origin,
             os.link_pdf
         );
+        os_view.innerHTML = html;
 
-        let box_os = document.getElementById(os.uid);
-        let select_os = box_os.querySelector(".select-os");
+        const box_os = document.getElementById(os.uid);
+        const select_os = box_os.querySelector(".select-os");
 
         select_os.value = os.status;
         select_os.addEventListener("change", async () => {
             const novoStatus = Number(select_os.value);
 
+            console.log({
+                uid: os.uid,
+                status: novoStatus,
+                typeofStatus: typeof novoStatus
+            });
             try {
                 const res = await fetch(
                     "https://os-click-laser.mitosobr.workers.dev/update-status",
@@ -422,7 +423,7 @@ async function buscarOSPorData() {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            id: os.uid,
+                            uid: os.uid,
                             status: novoStatus
                         })
                     }
@@ -437,12 +438,11 @@ async function buscarOSPorData() {
 
             } catch (err) {
                 alert("Erro ao atualizar status da OS");
-                console.error(err);
+                console.log(err);
             }
         });
     });
 
-    os_view.innerHTML = html;
 }
 
 async function listarOS(dataSelecionada) {
