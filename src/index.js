@@ -28,12 +28,12 @@ export default {
             const formData = await request.formData();
 
             const file = formData.get("file");
-            const tipo = formData.get("tipe");
+            const type = formData.get("tipe");
             const date = formData.get("date");
             const hour = formData.get("hour");
             const origin = formData.get("origin");
 
-            if (!file || !tipo || !date || !hour || !origin) {
+            if (!file || !type || !date || !hour || !origin) {
                 return new Response("Dados incompletos", {
                     status: 400,
                     headers: corsHeaders
@@ -62,7 +62,7 @@ export default {
                         "Prefer": "return=minimal"
                     },
                     body: JSON.stringify({
-                        type: tipo,
+                        type: type,
                         date,
                         hour,
                         origin,

@@ -324,7 +324,7 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
 
     const tipo = nomeArquivo.startsWith("pack") ? "pack" : "single";
 
-    formData.append("tipo", tipo);
+    formData.append("type", tipo);
     formData.append("date", `${yyyy}-${mm}-${dd}`); // formato DATE válido
     formData.append("hour", `${hh}:${min}`);        // formato TIME válido
     formData.append("origin", origem);
