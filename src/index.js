@@ -8,6 +8,9 @@ export default {
             "Access-Control-Allow-Headers": "Content-Type"
         };
 
+        // ===============================
+        // CORS preflight
+        // ===============================
         if (request.method === "OPTIONS") {
             return new Response(null, { status: 204, headers: corsHeaders });
         }
@@ -43,14 +46,14 @@ export default {
             const fileName = file.name;
             const fileBuffer = await file.arrayBuffer();
 
-            // 🔹 salva no R2
+            // 🔹 Salva no R2
             await env.R2_OS.put(fileName, fileBuffer, {
                 httpMetadata: { contentType: "application/pdf" }
             });
 
             const fileUrl = `${url.origin}/view/${fileName}`;
 
-            // 🔹 grava no Supabase
+            // 🔹 Salva no Supabase
             const supabaseRes = await fetch(
                 `${env.SUPABASE_URL}/rest/v1/history_services_click_laser`,
                 {
@@ -62,12 +65,12 @@ export default {
                         "Prefer": "return=minimal"
                     },
                     body: JSON.stringify({
-                        type: type,          // ✅ CORRIGIDO
+                        type,
                         date,
                         hour,
                         origin,
                         link_pdf: fileUrl,
-                        status: 1
+                        status: 0
                     })
                 }
             );
@@ -96,7 +99,53 @@ export default {
         }
 
         // ===============================
-        // GET → Visualização PDF
+        // GET → Listar OS por data
+        // ===============================
+        if (request.method === "GET" && url.pathname === "/list") {
+
+            const date = url.searchParams.get("date");
+
+            if (!date) {
+                return new Response(
+                    JSON.stringify({ error: "Data não informada" }),
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+
+            const supabaseRes = await fetch(
+                `${env.SUPABASE_URL}/rest/v1/history_services_click_laser?date=eq.${date}&order=hour.asc`,
+                {
+                    headers: {
+                        "apikey": env.SUPABASE_SERVICE_KEY,
+                        "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+            if (!supabaseRes.ok) {
+                const err = await supabaseRes.text();
+                return new Response(
+                    JSON.stringify({ error: "Erro ao buscar dados", details: err }),
+                    { status: 500, headers: corsHeaders }
+                );
+            }
+
+            const data = await supabaseRes.json();
+
+            return new Response(
+                JSON.stringify(data),
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...corsHeaders
+                    }
+                }
+            );
+        }
+
+        // ===============================
+        // GET → Visualização do PDF
         // ===============================
         if (request.method === "GET" && url.pathname.startsWith("/view/")) {
             const fileName = url.pathname.replace("/view/", "");
@@ -118,6 +167,9 @@ export default {
             });
         }
 
+        // ===============================
+        // Fallback
+        // ===============================
         return new Response("Not found", {
             status: 404,
             headers: corsHeaders

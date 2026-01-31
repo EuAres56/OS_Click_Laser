@@ -337,3 +337,86 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
     const data = await res.json();
     return data.url;
 }
+
+
+function create_list_os_html(hora, tipo, origem, status, link) {
+    return `
+            <div class="os-box horizontal-div">
+                <div>
+                    HORA
+                    <p>${hora}</p>
+                </div>
+                <div>
+                    TIPO
+                    <p>${tipo}</p>
+                </div>
+                <div>
+                    SITUAÇÃO
+                    <p>${status}</p>
+                </div>
+                <div>
+                    ORIGEM
+                    <p>${origem}</p>
+                </div>
+                <div>
+                    LINK
+                    <p>
+                        <a href="${link}">${link}</a>
+                    </p>
+                </div>
+            </div>
+    `
+}
+
+async function buscarOSPorData() {
+    const dataSelecionada = document.getElementById("dataSelecionada").value;
+    const os_view = document.getElementById("os_view");
+
+    os_view.innerHTML = "<p>Buscando...</p>";
+
+    const lista = await listarOS(dataSelecionada);
+
+    if (!lista.length) {
+        os_view.innerHTML = "<p>Nenhuma OS encontrada para esta data.</p>";
+        return;
+    }
+
+    let html = "";
+    lista.forEach(os => {
+        const situacao = ["Pedido aceito", "Em produção", "Finalizado"];
+        html += create_list_os_html(
+            os.hour,
+            os.type,
+            os.origin,
+            situacao[os.status],
+            os.link_pdf
+        );
+    });
+
+    os_view.innerHTML = html;
+}
+
+async function listarOS(dataSelecionada) {
+    if (!dataSelecionada) {
+        alert("Selecione uma data");
+        return = [];
+    }
+
+    try {
+        const res = await fetch(
+            `https://os-click-laser.mitosobr.workers.dev/list?date=${dataSelecionada}`
+        );
+
+        if (!res.ok) {
+            throw new Error("Erro ao buscar OS");
+        }
+
+        const dados = await res.json();
+        return dados; // array de registros do Supabase
+
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao consultar os serviços");
+        return [];
+    }
+}
