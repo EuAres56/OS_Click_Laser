@@ -370,7 +370,7 @@ function create_list_os_html(hora, tipo, origem, status, link) {
 
 async function buscarOSPorData() {
     const dataSelecionada = document.getElementById("dataSelecionada").value;
-    const os_view = document.getElementById("os_view");
+    const os_view = document.getElementById("os-view");
 
     os_view.innerHTML = "<p>Buscando...</p>";
 
