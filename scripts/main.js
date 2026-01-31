@@ -384,9 +384,17 @@ async function buscarOSPorData() {
     let html = "";
     lista.forEach(os => {
         const situacao = ["Pedido aceito", "Em produção", "Finalizado"];
+
+        let tipo = ""
+        if (os.type == "pack") {
+            tipo = "PACOTE"
+        } else {
+            tipo = "ÚNICO"
+        }
+
         html += create_list_os_html(
             os.hour,
-            os.type,
+            tipo,
             os.origin,
             situacao[os.status],
             os.link_pdf
