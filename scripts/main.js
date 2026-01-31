@@ -361,7 +361,7 @@ function create_list_os_html(hora, tipo, origem, status, link) {
                 <div>
                     LINK
                     <p>
-                        <a href="${link}">${link}</a>
+                        <a href="${link}">Ver PDF</a>
                     </p>
                 </div>
             </div>
