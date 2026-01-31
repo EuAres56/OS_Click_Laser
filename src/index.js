@@ -52,7 +52,7 @@ export default {
 
             // 🔹 grava no Supabase
             const supabaseRes = await fetch(
-                `${env.SUPABASE_URL}/rest/v1/os_producao`,
+                `${env.SUPABASE_URL}/rest/v1/history_services_click_laser`,
                 {
                     method: "POST",
                     headers: {
