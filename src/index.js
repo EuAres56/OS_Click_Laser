@@ -34,7 +34,7 @@ export default {
             const origin = formData.get("origin");
 
             if (!file || !type || !date || !hour || !origin) {
-                return new Response("Dados incompletos", {
+                return new Response(`Dados incompletos: ${JSON.stringify({ type, date, hour, origin })}`, {
                     status: 400,
                     headers: corsHeaders
                 });

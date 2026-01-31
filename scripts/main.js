@@ -122,11 +122,9 @@ function print_single() {
 
     print_area.innerHTML = html;
 
-    const origem = document.getElementById('origem').value;
-
 
     // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
-    gerarPDFdoHTML("single", print_area, origem);
+    gerarPDFdoHTML("single", print_area, orig);
 }
 
 
@@ -177,10 +175,9 @@ function print_pack() {
         </div>
     `
     print_area.innerHTML = html;
-    const origem = document.getElementById('origemPack').value;
     // 🔽 AQUI: converte esse HTML pronto em PDF e imprime
 
-    gerarPDFdoHTML("pack", print_area, origem);
+    gerarPDFdoHTML("pack", print_area, orig);
 
 
 }
