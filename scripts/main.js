@@ -104,6 +104,7 @@ function print_single() {
     html += `
         <div class="linha"></div>
         <div class="linha"></div>
+
         <div class="os-footer">
             <canvas id="qrcode"></canvas>
             <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
@@ -155,8 +156,9 @@ function print_pack() {
         html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
     });
     html += `
-        < div class="linha"></div >
         <div class="linha"></div>
+        <div class="linha"></div>
+
         <div class="os-footer">
             <canvas id="qrcode"></canvas>
             <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
