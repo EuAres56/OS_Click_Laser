@@ -103,7 +103,7 @@ function print_single() {
 
     print_area.innerHTML = html;
 
-    // 🔽 AQUI: converte esse HTML pronto em PDF
+    // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
     gerarPDFdoHTML("single");
 
     // impressão continua normal
@@ -263,8 +263,18 @@ async function gerarPDFdoHTML(tipo) {
         .from(printArea)
         .outputPdf("blob");
 
-    await enviarPDFParaNuvem(pdfBlob, nomeArquivo);
+    const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo);
 
+    // 3. Gera o QR Code (AQUI 👇)
+    const qrCanvas = document.getElementById("qrcode");
+
+    await QRCode.toCanvas(qrCanvas, linkPDF, {
+        width: 120,
+        margin: 1
+    });
+
+    // 4. Escreve o link abaixo do QR
+    document.getElementById("linkPDF").textContent = linkPDF;
 }
 
 async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
