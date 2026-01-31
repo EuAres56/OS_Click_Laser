@@ -242,8 +242,9 @@ window.addEventListener("load", () => {
 async function gerarPDFdoHTML(tipo) {
     const printArea = document.getElementById("printArea");
 
-    // garante que o layout já foi renderizado
-    await new Promise(r => setTimeout(r, 50));
+    // garante repaint + fontes
+    await document.fonts.ready;
+    await new Promise(r => requestAnimationFrame(r));
 
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, "0");
@@ -305,6 +306,10 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
         }
     );
 
+    if (!res.ok) {
+        throw new Error("Falha ao enviar PDF");
+    }
+
     const data = await res.json();
-    return data.url; // ← LINK DO PDF
+    return data.url;
 }

@@ -53,11 +53,36 @@ export default {
 
             const fileUrl = `${url.origin}/view/${fileName}`;
 
+            // ===============================
+            // 🕒 DATA / HORA DA OS
+            // ===============================
+            const now = new Date();
+            const data = now.toLocaleDateString("pt-BR");
+            const hora = now.toLocaleTimeString("pt-BR");
+
+            // ===============================
+            // 📊 REGISTRA NO GOOGLE SHEETS
+            // ===============================
+            const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbx_JnwqQ_5EngRMRQT8mkqpqO9G8JFyfC1de3_b74hcNFa6s9AwvZVoyI2QghtB_66D/exec";
+
+            // envio assíncrono (não trava o fluxo)
+            fetch(GOOGLE_SHEETS_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    data,
+                    hora,
+                    link: fileUrl
+                })
+            }).catch(() => { });
+
             return new Response(
                 JSON.stringify({
                     status: "ok",
                     arquivo: fileName,
-                    url: fileUrl
+                    url: fileUrl,
+                    data,
+                    hora
                 }),
                 {
                     headers: {
