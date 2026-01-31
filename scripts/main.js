@@ -114,7 +114,7 @@ function print_single() {
     print_area.innerHTML = html;
 
     // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
-    gerarPDFdoHTML("single");
+    gerarPDFdoHTML("single", print_area);
 }
 
 
@@ -165,8 +165,10 @@ function print_pack() {
         </div>
     `
     print_area.innerHTML = html;
-    // 🔽 AQUI: converte esse HTML pronto em PDF
-    gerarPDFdoHTML("pack");
+    // 🔽 AQUI: converte esse HTML pronto em PDF e imprime
+    gerarPDFdoHTML("pack", print_area);
+
+
 }
 
 
@@ -239,7 +241,7 @@ window.addEventListener("load", () => {
 
 // ENVIAR OS PARA A NUVEM
 
-async function gerarPDFdoHTML(tipo) {
+async function gerarPDFdoHTML(tipo, print_area) {
     const printArea = document.getElementById("printArea");
 
     // garante repaint + fontes
@@ -291,6 +293,7 @@ async function gerarPDFdoHTML(tipo) {
 
     // impressão continua normal
     setTimeout(() => window.print(), 100);
+    setTimeout(() => print_area.innerHTML = "", 200);
 
 }
 
