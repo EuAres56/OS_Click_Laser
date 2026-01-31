@@ -9,10 +9,7 @@ export default {
         };
 
         if (request.method === "OPTIONS") {
-            return new Response(null, {
-                status: 204,
-                headers: corsHeaders
-            });
+            return new Response(null, { status: 204, headers: corsHeaders });
         }
 
         // ===============================
@@ -22,22 +19,25 @@ export default {
 
             const contentType = request.headers.get("content-type") || "";
             if (!contentType.includes("multipart/form-data")) {
-                return new Response("Formato inválido", { status: 400, headers: corsHeaders });
+                return new Response(
+                    JSON.stringify({ error: "Formato inválido" }),
+                    { status: 400, headers: corsHeaders }
+                );
             }
 
             const formData = await request.formData();
 
             const file = formData.get("file");
-            const type = formData.get("tipe");
+            const type = formData.get("type");
             const date = formData.get("date");
             const hour = formData.get("hour");
             const origin = formData.get("origin");
 
             if (!file || !type || !date || !hour || !origin) {
-                return new Response(`Dados incompletos: ${JSON.stringify({ type, date, hour, origin })}`, {
-                    status: 400,
-                    headers: corsHeaders
-                });
+                return new Response(
+                    JSON.stringify({ error: "Dados incompletos" }),
+                    { status: 400, headers: corsHeaders }
+                );
             }
 
             const fileName = file.name;
@@ -62,7 +62,7 @@ export default {
                         "Prefer": "return=minimal"
                     },
                     body: JSON.stringify({
-                        type: type,
+                        type: type,          // ✅ CORRIGIDO
                         date,
                         hour,
                         origin,
@@ -73,10 +73,11 @@ export default {
             );
 
             if (!supabaseRes.ok) {
-                return new Response("Erro ao salvar no Supabase", {
-                    status: 500,
-                    headers: corsHeaders
-                });
+                const err = await supabaseRes.text();
+                return new Response(
+                    JSON.stringify({ error: "Erro Supabase", details: err }),
+                    { status: 500, headers: corsHeaders }
+                );
             }
 
             return new Response(
@@ -99,8 +100,8 @@ export default {
         // ===============================
         if (request.method === "GET" && url.pathname.startsWith("/view/")) {
             const fileName = url.pathname.replace("/view/", "");
-
             const object = await env.R2_OS.get(fileName);
+
             if (!object) {
                 return new Response("Arquivo não encontrado", {
                     status: 404,
