@@ -242,7 +242,9 @@ window.addEventListener("load", () => {
 async function gerarPDFdoHTML(tipo) {
     const printArea = document.getElementById("printArea");
 
-    await new Promise(r => setTimeout(r, 50));
+    // garante repaint + fontes
+    await document.fonts.ready;
+    await new Promise(r => requestAnimationFrame(r));
 
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, "0");
@@ -257,8 +259,16 @@ async function gerarPDFdoHTML(tipo) {
         margin: 8,
         filename: nomeArquivo,
         image: { type: "jpeg", quality: 1 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#fff" },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff"
+        },
+        jsPDF: {
+            unit: "mm",
+            format: "a4",
+            orientation: "portrait"
+        }
     };
 
     const pdfBlob = await html2pdf()
@@ -266,24 +276,22 @@ async function gerarPDFdoHTML(tipo) {
         .from(printArea)
         .outputPdf("blob");
 
-    // ⚡ envia para o Worker
-    const formData = new FormData();
-    formData.append("file", pdfBlob, nomeArquivo);
+    const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo);
 
-    const res = await fetch("https://os-click-laser.mitosobr.workers.dev/upload", {
-        method: "POST",
-        body: formData
+    // 3. Gera o QR Code (AQUI 👇)
+    const qrCanvas = document.getElementById("qrcode");
+
+    await QRCode.toCanvas(qrCanvas, linkPDF, {
+        width: 120,
+        margin: 1
     });
 
-    const data = await res.json();
+    // 4. Escreve o link abaixo do QR
+    document.getElementById("linkPDF").textContent = linkPDF;
 
-    // QR Code
-    const qrCanvas = document.getElementById("qrcode");
-    await QRCode.toCanvas(qrCanvas, data.url, { width: 120, margin: 1 });
-    document.getElementById("linkPDF").textContent = data.url;
-
-    // impressão
+    // impressão continua normal
     setTimeout(() => window.print(), 100);
+
 }
 
 async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
@@ -298,10 +306,6 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
         }
     );
 
-    if (!res.ok) {
-        throw new Error("Falha ao enviar PDF");
-    }
-
     const data = await res.json();
-    return data.url;
+    return data.url; // ← LINK DO PDF
 }
