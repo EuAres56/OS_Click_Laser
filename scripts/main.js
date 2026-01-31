@@ -1,3 +1,12 @@
+// ABRE MODAL DE VISUALIZAÇÃO
+function pageView() {
+    const pages = document.querySelectorAll('.form-container');
+
+    pages.forEach(page => {
+        page.classList.toggle('show');
+    });
+}
+
 /* TOGGLE */
 const toggle = document.getElementById('osToggle');
 const tabs = document.querySelectorAll('.tab');
@@ -113,8 +122,11 @@ function print_single() {
 
     print_area.innerHTML = html;
 
+    const origem = document.getElementById('origem').value;
+
+
     // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
-    gerarPDFdoHTML("single", print_area);
+    gerarPDFdoHTML("single", print_area, origem);
 }
 
 
@@ -165,8 +177,10 @@ function print_pack() {
         </div>
     `
     print_area.innerHTML = html;
+    const origem = document.getElementById('origemPack').value;
     // 🔽 AQUI: converte esse HTML pronto em PDF e imprime
-    gerarPDFdoHTML("pack", print_area);
+
+    gerarPDFdoHTML("pack", print_area, origem);
 
 
 }
@@ -241,7 +255,7 @@ window.addEventListener("load", () => {
 
 // ENVIAR OS PARA A NUVEM
 
-async function gerarPDFdoHTML(tipo, print_area) {
+async function gerarPDFdoHTML(tipo, print_area, origem) {
     const printArea = document.getElementById("printArea");
 
     // garante repaint + fontes
@@ -278,7 +292,7 @@ async function gerarPDFdoHTML(tipo, print_area) {
         .from(printArea)
         .outputPdf("blob");
 
-    const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo);
+    const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem);
 
     // 3. Gera o QR Code (AQUI 👇)
     const qrCanvas = document.getElementById("qrcode");
@@ -297,9 +311,23 @@ async function gerarPDFdoHTML(tipo, print_area) {
 
 }
 
-async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
+async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
     const formData = new FormData();
     formData.append("file", pdfBlob, nomeArquivo);
+
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, "0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+
+    const tipo = nomeArquivo.startsWith("pack") ? "pack" : "single";
+
+    formData.append("tipo", tipo);
+    formData.append("date", `${yyyy}-${mm}-${dd}`); // formato DATE válido
+    formData.append("hour", `${hh}:${min}`);        // formato TIME válido
+    formData.append("origin", origem);
 
     const res = await fetch(
         "https://os-click-laser.mitosobr.workers.dev/upload",
@@ -310,5 +338,5 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {
     );
 
     const data = await res.json();
-    return data.url; // ← LINK DO PDF
+    return data.url;
 }
