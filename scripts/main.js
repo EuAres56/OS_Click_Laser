@@ -99,25 +99,21 @@ function print_single() {
     const orig = document.getElementById('origem').value;
 
     // Gera o HTML com os dados capturados
-    const html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+    let html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
 
     html += `
         <div class="linha"></div>
         <div class="linha"></div>
-        <canvas id="qrcode"></canvas>
-        <p style="font-size:10px">
-        https://os-click-laser.mitosobr.workers.dev/view/OS-1234.pdf
-        </p>
+        <div class="os-footer">
+            <canvas id="qrcode"></canvas>
+            <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
+        </div>
     `
 
     print_area.innerHTML = html;
 
     // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
     gerarPDFdoHTML("single");
-
-
-    // impressão continua normal
-    setTimeout(() => window.print(), 100);
 }
 
 
@@ -159,19 +155,16 @@ function print_pack() {
         html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
     });
     html += `
+        < div class="linha"></div >
         <div class="linha"></div>
-        <div class="linha"></div>
-        <canvas id="qrcode"></canvas>
-        <p style="font-size:10px">
-        https://os-click-laser.mitosobr.workers.dev/view/OS-1234.pdf
-        </p>
+        <div class="os-footer">
+            <canvas id="qrcode"></canvas>
+            <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
+        </div>
     `
     print_area.innerHTML = html;
     // 🔽 AQUI: converte esse HTML pronto em PDF
     gerarPDFdoHTML("pack");
-
-    // Chama a janela de impressão
-    setTimeout(() => window.print(), 100);
 }
 
 
@@ -292,6 +285,10 @@ async function gerarPDFdoHTML(tipo) {
 
     // 4. Escreve o link abaixo do QR
     document.getElementById("linkPDF").textContent = linkPDF;
+
+    // impressão continua normal
+    setTimeout(() => window.print(), 100);
+
 }
 
 async function enviarPDFParaNuvem(pdfBlob, nomeArquivo) {

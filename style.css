@@ -279,4 +279,15 @@ button:hover {
     .form-container {
         display: none;
     }
+
+    .os-footer {
+        margin-top: 24px;
+        text-align: center;
+    }
+
+    #qrcode {
+        display: block;
+        margin: 0 auto 6px;
+    }
+}
 }
