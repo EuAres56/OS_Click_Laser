@@ -168,6 +168,61 @@ export default {
         }
 
         // ===============================
+        // POST → Atualizar STATUS da OS
+        // ===============================
+        if (request.method === "POST" && url.pathname === "/update-status") {
+
+            const body = await request.json();
+            const { id, status } = body;
+
+            if (!id || status === undefined) {
+                return new Response(
+                    JSON.stringify({ error: "Dados inválidos" }),
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+
+            // valida status permitido
+            const statusPermitidos = [0, 1, 2, 3];
+            if (!statusPermitidos.includes(status)) {
+                return new Response(
+                    JSON.stringify({ error: "Status inválido" }),
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+
+            const supabaseRes = await fetch(
+                `${env.SUPABASE_URL}/rest/v1/history_services_click_laser?id=eq.${id}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": env.SUPABASE_SERVICE_KEY,
+                        "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+                        "Prefer": "return=minimal"
+                    },
+                    body: JSON.stringify({
+                        status
+                    })
+                }
+            );
+
+            if (!supabaseRes.ok) {
+                const err = await supabaseRes.text();
+                return new Response(
+                    JSON.stringify({ error: "Erro ao atualizar status", details: err }),
+                    { status: 500, headers: corsHeaders }
+                );
+            }
+
+            return new Response(
+                JSON.stringify({ status: "ok", id, new_status: status }),
+                { headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+        }
+
+
+        // ===============================
         // Fallback
         // ===============================
         return new Response("Not found", {

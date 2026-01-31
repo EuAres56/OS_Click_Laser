@@ -339,9 +339,9 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
 }
 
 
-function create_list_os_html(hora, tipo, origem, status, link) {
+function create_list_os_html(id, hora, tipo, origem, link) {
     return `
-            <div class="os-box horizontal-div">
+            <div id="${id}" class="os-box horizontal-div" >
                 <div>
                     HORA
                     <p>${hora}</p>
@@ -352,17 +352,24 @@ function create_list_os_html(hora, tipo, origem, status, link) {
                 </div>
                 <div>
                     SITUAÇÃO
-                    <p>${status}</p>
+                    <select class="select-os">
+                        <option value="0" class="opt-os-0">Pedido aceito</option>
+                        <option value="1" class="opt-os-1">Em produção</option>
+                        <option value="2" class="opt-os-2">Finalizado</option>
+                        <option value="2" class="opt-os-3">Cancelado</option>
+                    </select>
                 </div>
                 <div>
                     ORIGEM
                     <p>${origem}</p>
                 </div>
                 <div>
-                    LINK
-                    <p>
-                        <a href="${link}">Ver PDF</a>
-                    </p>
+                    <a href="href="${link}"">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="href="${link}"">
+                        <i class="bi bi-eye"></i>
+                    </a>
                 </div>
             </div>
     `
@@ -383,7 +390,6 @@ async function buscarOSPorData() {
 
     let html = "";
     lista.forEach(os => {
-        const situacao = ["Pedido aceito", "Em produção", "Finalizado"];
 
         let tipo = ""
         if (os.type == "pack") {
@@ -393,12 +399,47 @@ async function buscarOSPorData() {
         }
 
         html += create_list_os_html(
+            os.uid,
             os.hour,
             tipo,
             os.origin,
-            situacao[os.status],
             os.link_pdf
         );
+
+        let box_os = document.getElementById(os.uid);
+        let select_os = box_os.querySelector(".select-os");
+
+        select_os.value = os.status;
+        select_os.addEventListener("change", async () => {
+            const novoStatus = Number(select_os.value);
+
+            try {
+                const res = await fetch(
+                    "https://os-click-laser.mitosobr.workers.dev/update-status",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            id: os.uid,
+                            status: novoStatus
+                        })
+                    }
+                );
+
+                if (!res.ok) {
+                    throw new Error("Erro ao atualizar status");
+                }
+
+                const data = await res.json();
+                console.log("Status atualizado:", data);
+
+            } catch (err) {
+                alert("Erro ao atualizar status da OS");
+                console.error(err);
+            }
+        });
     });
 
     os_view.innerHTML = html;
