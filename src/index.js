@@ -63,9 +63,9 @@ export default {
             // ===============================
             // 📊 REGISTRA NO GOOGLE SHEETS
             // ===============================
-            const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbx_JnwqQ_5EngRMRQT8mkqpqO9G8JFyfC1de3_b74hcNFa6s9AwvZVoyI2QghtB_66D/exechttps://script.google.com/macros/s/AKfycbx_JnwqQ_5EngRMRQT8mkqpqO9G8JFyfC1de3_b74hcNFa6s9AwvZVoyI2QghtB_66D/exec";
+            const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbx_JnwqQ_5EngRMRQT8mkqpqO9G8JFyfC1de3_b74hcNFa6s9AwvZVoyI2QghtB_66D/exec";
 
-            // envio assíncrono (não trava o fluxo)
+            // envio assíncrono (não trava o fluxo) usando 'no-cors' para não bloquear
             fetch(GOOGLE_SHEETS_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -73,7 +73,8 @@ export default {
                     data,
                     hora,
                     link: fileUrl
-                })
+                }),
+                mode: "no-cors"
             }).catch(() => { });
 
             return new Response(
