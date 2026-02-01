@@ -356,6 +356,98 @@ button:hover {
 }
 
 
+/* ====== PACK SEM NOME ====== */
+
+.inline-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Esconde checkbox padrão */
+.inline-check input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    background: var(--bg-input);
+    display: grid;
+    place-content: center;
+    transition: .25s;
+    cursor: pointer;
+}
+
+/* Check visual */
+.inline-check input[type="checkbox"]::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 4px;
+    background: linear-gradient(135deg,
+            var(--purple-main),
+            var(--purple-accent));
+    transform: scale(0);
+    transition: .2s ease-in-out;
+}
+
+/* Checked */
+.inline-check input[type="checkbox"]:checked {
+    border-color: var(--purple-accent);
+    box-shadow: 0 0 0 3px rgba(167, 19, 204, .15);
+}
+
+.inline-check input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+/* Hover */
+.inline-check:hover input[type="checkbox"] {
+    border-color: var(--purple-accent);
+}
+
+/* Campo quantidade */
+#qtdPack {
+    margin-top: 6px;
+}
+
+/* Label da quantidade */
+#qtdPackLabel {
+    margin-top: 10px;
+    font-size: 11px;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+}
+
+/* Desabilitado (textarea nomes) */
+#nomesPack:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    background: repeating-linear-gradient(45deg,
+            #f5f5f5,
+            #f5f5f5 10px,
+            #ededed 10px,
+            #ededed 20px);
+}
+
+/* ====== OCULTAR NOMES QUANDO "SEM NOME" ATIVO ====== */
+
+/* Esconde textarea de nomes */
+.tab-pack:has(#packSemNome:checked) #nomesPack {
+    display: none;
+}
+
+/* Opcional: remove também o label acima */
+.tab-pack:has(#packSemNome:checked) label[for="nomesPack"] {
+    display: none;
+}
 
 @media print {
     @page {

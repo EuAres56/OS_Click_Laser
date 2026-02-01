@@ -7,6 +7,22 @@ function pageView() {
     });
 }
 
+// PACOTE DE GARRAFAS SEM NOME
+const packSemNome = document.getElementById("packSemNome");
+const qtdPack = document.getElementById("qtdPack");
+const qtdPackLabel = document.getElementById("qtdPackLabel");
+const nomesPack = document.getElementById("nomesPack");
+
+packSemNome.addEventListener("change", () => {
+    const ativo = packSemNome.checked;
+
+    qtdPack.style.display = ativo ? "block" : "none";
+    qtdPackLabel.style.display = ativo ? "block" : "none";
+
+    nomesPack.disabled = ativo;
+    if (ativo) nomesPack.value = "";
+});
+
 /* TOGGLE */
 const toggle = document.getElementById('osToggle');
 const tabs = document.querySelectorAll('.tab');
@@ -146,25 +162,44 @@ function print_pack() {
     const obs = document.getElementById('obsPack').value || "-";
     const orig = document.getElementById('origemPack').value;
 
-    const nomes = document.getElementById('nomesPack').value;
-
-    const lista_nomes = nomes
-        .split(/\r?\n/)      // divide por linha (Windows, Linux, Mac)
-        .map(l => l.trim())  // remove espaços extras
-        .filter(l => l);     // remove linhas vazias
-
+    const semNome = packSemNome.checked;
     let html = '';
-    lista_nomes.forEach(nome => {
-        if (html != '') {
-            html += `
+    if (semNome) {
+        const num_garrafas = document.getElementById('qtdPack').value;
+        if (!num_garrafas || num_garrafas <= 0) {
+            alert("Informe a quantidade de garrafas.");
+            return;
+        }
+
+        const s_nome = "Gravações sem nome";
+        let obsv = `${num_garrafas} unidades sem nome`
+        if (obs != "-") {
+            obsv += "\n"
+            obsv += obs
+        }
+        html = create_print_html(data, hora, item, figura, fonte, entrega, s_nome, obsv, orig);
+
+    } else {
+        const nomes = document.getElementById('nomesPack').value;
+
+        let lista_nomes = nomes
+            .split(/\r?\n/)      // divide por linha (Windows, Linux, Mac)
+            .map(l => l.trim())  // remove espaços extras
+            .filter(l => l);     // remove linhas vazias
+
+        lista_nomes.forEach(nome => {
+            if (html != '') {
+                html += `
             <div class="linha"></div>
             <p>PRÓXIMA GRAVAÇÃO</p>
             <div class="linha"></div>
             `;
-        }
-        // Gera o HTML com os dados capturados
-        html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
-    });
+            }
+            // Gera o HTML com os dados capturados
+            html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+        });
+    }
+
     html += `
         <div class="linha"></div>
         <div class="linha"></div>

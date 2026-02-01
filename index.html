@@ -115,6 +115,15 @@
             <label class="exemploFontePack font_exe">Exemplo</label>
             <br>
             <label>NOMES (um por linha):</label>
+            <label class="inline-check">
+                <input type="checkbox" id="packSemNome">
+                Pacote sem nomes (mesmo modelo)
+            </label>
+
+            <label for="qtdPack" id="qtdPackLabel" style="display:none;">
+                QUANTIDADE DE GARRAFAS:
+            </label>
+            <input type="number" id="qtdPack" min="1" placeholder="Ex: 10" style="display:none;">
             <textarea id="nomesPack" rows="6"></textarea>
 
             <label>PEDIDO PARA (DATA DE ENTREGA):</label>
