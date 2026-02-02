@@ -442,8 +442,6 @@ async function buscarOSPorData() {
 
         box_os.innerHTML = html;
 
-
-
         os_view.appendChild(box_os);
 
         const select_os = box_os.querySelector(".select-os");
