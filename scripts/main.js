@@ -374,9 +374,8 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
 }
 
 
-function create_list_os_html(id, hora, tipo, origem, link) {
+function create_list_os_html(hora, tipo, origem, link) {
     return `
-            <div id="${id}" class="os-box horizontal-div" >
                 <div>
                     HORA
                     <p>${hora}</p>
@@ -387,7 +386,7 @@ function create_list_os_html(id, hora, tipo, origem, link) {
                 </div>
                 <div>
                     SITUAÇÃO
-                    <select class="select-os">
+                    <select name="status" class="select-os">
                         <option value="0" class="opt-os-0">Pedido aceito</option>
                         <option value="1" class="opt-os-1">Em produção</option>
                         <option value="2" class="opt-os-2">Finalizado</option>
@@ -401,7 +400,6 @@ function create_list_os_html(id, hora, tipo, origem, link) {
                     <a class="fake-btn horizontal-div" href="${link}" target="_blank">
                         <i class="bi bi-eye" style="color: white;"></i>
                     </a>
-            </div>
     `
 }
 
@@ -418,9 +416,9 @@ async function buscarOSPorData() {
         return;
     }
 
-    let html = "";
-    lista.forEach(os => {
+    os_view.innerHTML = "";
 
+    lista.forEach(os => {
         let tipo = ""
         if (os.type == "pack") {
             tipo = "PACOTE"
@@ -428,21 +426,33 @@ async function buscarOSPorData() {
             tipo = "ÚNICO"
         }
 
-        html += create_list_os_html(
-            os.uid,
+
+        const box_os = document.createElement("div");
+
+        box_os.classList.add("box-os");
+        box_os.classList.add("horizontal-div");
+        box_os.setAttribute("id", os.uid);
+
+        const html = create_list_os_html(
             os.hour,
             tipo,
             os.origin,
             os.link_pdf
         );
-        os_view.innerHTML = html;
 
-        const box_os = document.getElementById(os.uid);
+        box_os.innerHTML = html;
+
+
+
+        os_view.appendChild(box_os);
+
         const select_os = box_os.querySelector(".select-os");
 
         select_os.value = os.status;
+
         select_os.addEventListener("change", async () => {
             const novoStatus = Number(select_os.value);
+            console.log(novoStatus)
 
             try {
                 const res = await fetch(
