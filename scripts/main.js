@@ -390,7 +390,7 @@ function create_list_os_html(hora, tipo, origem, link) {
                         <option value="0" class="opt-os-0">Pedido aceito</option>
                         <option value="1" class="opt-os-1">Em produção</option>
                         <option value="2" class="opt-os-2">Finalizado</option>
-                        <option value="2" class="opt-os-3">Cancelado</option>
+                        <option value="3" class="opt-os-3">Cancelado</option>
                     </select>
                 </div>
                 <div>
