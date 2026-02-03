@@ -148,7 +148,6 @@ function print_single() {
 function print_pack() {
     const print_area = document.getElementById('printArea');
 
-
     // Captura data e hora
     const agora = new Date();
     const data = agora.toLocaleDateString('pt-br');
@@ -425,7 +424,6 @@ async function buscarOSPorData() {
         } else {
             tipo = "ÚNICO"
         }
-
 
         const box_os = document.createElement("div");
 
