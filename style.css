@@ -263,6 +263,10 @@ button:hover {
     color: var(--purple-accent);
 }
 
+.box_origem {
+    width: 100px;
+}
+
 #view-os p {
     overflow: hidden;
     font-size: small;
