@@ -35,8 +35,9 @@ export default {
             const date = formData.get("date");
             const hour = formData.get("hour");
             const origin = formData.get("origin");
+            const data_json = formData.get("data_json");
 
-            if (!file || !type || !date || !hour || !origin) {
+            if (!file || !type || !date || !hour || !origin || !data_json) {
                 return new Response(
                     JSON.stringify({ error: "Dados incompletos" }),
                     { status: 400, headers: corsHeaders }
@@ -70,7 +71,8 @@ export default {
                         hour,
                         origin,
                         link_pdf: fileUrl,
-                        status: 0
+                        status: 0,
+                        data_json
                     })
                 }
             );

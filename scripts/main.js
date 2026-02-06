@@ -1,3 +1,4 @@
+const URL_BASE = "https://os-click-laser.mitosobr.workers.dev";
 // ABRE MODAL DE VISUALIZAÇÃO
 function pageView() {
     const pages = document.querySelectorAll('.form-container');
@@ -115,13 +116,33 @@ function print_single() {
     const data = agora.toLocaleDateString('pt-br');
     const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
 
-    // Alimenta o cupom (Preservando maiúsculas e minúsculas)
+    // Alimenta o cupom
     const item = document.getElementById('item').value;
     const fonte = document.getElementById('fonte').value;
     const entrega = (document.getElementById('dataEntrega').value).split('-').reverse().join('/') || data;
     const figura = document.getElementById('figura').value || "NENHUMA";
     const obs = document.getElementById('obs').value || "-";
     const orig = document.getElementById('origem').value;
+
+    // --- NOVA LÓGICA DE DICIONÁRIO ---
+    let dados = {};
+    let conteudo = {
+        "date": data,
+        "time": hora,
+        "item": item,
+        "figure": figura,
+        "font": fonte,
+        "delivery": entrega,
+        "name": nome,
+        "obs": obs,
+        "origin": orig
+    };
+
+    console.log(conteudo);
+    // Adiciona como o primeiro item (índice 0)
+    dados[0] = conteudo;
+    console.log(dados);
+    // ---------------------------------
 
     // Gera o HTML com os dados capturados
     let html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
@@ -134,13 +155,13 @@ function print_single() {
             <canvas id="qrcode"></canvas>
             <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
         </div>
-    `
+    `;
 
     print_area.innerHTML = html;
 
-
-    // 🔽 AQUI: converte esse HTML pronto em PDF e posta na nuvem
-    gerarPDFdoHTML("single", print_area, orig);
+    console.log("Dados de OS:", dados);
+    // Agora enviamos o objeto 'dados' como quarto parâmetro
+    gerarPDFdoHTML("single", print_area, orig, dados);
 }
 
 
@@ -163,6 +184,17 @@ function print_pack() {
 
     const semNome = packSemNome.checked;
     let html = '';
+    let dados = {};
+    let conteudo = {}
+    let proximoId = 0;
+
+    // Função para adicionar
+    function adicionarItem(conteudo) {
+        dados[proximoId] = conteudo;
+        proximoId++;
+    }
+
+
     if (semNome) {
         const num_garrafas = document.getElementById('qtdPack').value;
         if (!num_garrafas || num_garrafas <= 0) {
@@ -177,27 +209,47 @@ function print_pack() {
             obsv += obs
         }
         html = create_print_html(data, hora, item, figura, fonte, entrega, s_nome, obsv, orig);
-
+        conteudo = { "date": data, "time": hora, "item": item, "figure": figura, "font": fonte, "delivery": entrega, "name": s_nome, "obs": obsv, "origin": orig };
+        adicionarItem(conteudo);
     } else {
         const nomes = document.getElementById('nomesPack').value;
 
         let lista_nomes = nomes
-            .split(/\r?\n/)      // divide por linha (Windows, Linux, Mac)
-            .map(l => l.trim())  // remove espaços extras
-            .filter(l => l);     // remove linhas vazias
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l);
 
         lista_nomes.forEach(nome => {
             if (html != '') {
                 html += `
-            <div class="linha"></div>
-            <p>PRÓXIMA GRAVAÇÃO</p>
-            <div class="linha"></div>
-            `;
+                    <div class="linha"></div>
+                    <p>PRÓXIMA GRAVAÇÃO</p>
+                    <div class="linha"></div>
+                `;
             }
-            // Gera o HTML com os dados capturados
+
+            // 1. Gera o HTML
             html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+
+            // 2. Cria o objeto com os dados CORRETOS (usando 'nome' e 'obs')
+            let conteudo = {
+                "date": data,
+                "time": hora,
+                "item": item,
+                "figure": figura,
+                "font": fonte,
+                "delivery": entrega,
+                "name": nome, // <--- Aqui usamos a variável 'nome' do loop
+                "obs": obs,   // <--- Aqui usamos a 'obs' capturada no início
+                "origin": orig
+            };
+
+            // 3. Adiciona ao dicionário 'dados'
+            adicionarItem(conteudo);
         });
     }
+
+    // ... (resto do código: innerHTML, gerarPDFdoHTML, etc)
 
     html += `
         <div class="linha"></div>
@@ -211,7 +263,7 @@ function print_pack() {
     print_area.innerHTML = html;
     // 🔽 AQUI: converte esse HTML pronto em PDF e imprime
 
-    gerarPDFdoHTML("pack", print_area, orig);
+    gerarPDFdoHTML("pack", print_area, orig, dados);
 
 
 }
@@ -286,7 +338,7 @@ window.addEventListener("load", () => {
 
 // ENVIAR OS PARA A NUVEM
 
-async function gerarPDFdoHTML(tipo, print_area, origem) {
+async function gerarPDFdoHTML(tipo, print_area, origem, dados) {
     const printArea = document.getElementById("printArea");
 
     // garante repaint + fontes
@@ -323,7 +375,8 @@ async function gerarPDFdoHTML(tipo, print_area, origem) {
         .from(printArea)
         .outputPdf("blob");
 
-    const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem);
+    console.log(dados);
+    const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem, dados);
 
     // 3. Gera o QR Code (AQUI 👇)
     const qrCanvas = document.getElementById("qrcode");
@@ -342,7 +395,7 @@ async function gerarPDFdoHTML(tipo, print_area, origem) {
 
 }
 
-async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
+async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem, data) {
     const formData = new FormData();
     formData.append("file", pdfBlob, nomeArquivo);
 
@@ -355,28 +408,30 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem) {
 
     const tipo = nomeArquivo.startsWith("pack") ? "pack" : "single";
 
+    console.log("revisão de dados:", JSON.stringify(data));
     formData.append("type", tipo);
     formData.append("date", `${yyyy}-${mm}-${dd}`); // formato DATE válido
     formData.append("hour", `${hh}:${min}`);        // formato TIME válido
     formData.append("origin", origem);
+    formData.append("data_json", JSON.stringify(data));
 
     const res = await fetch(
-        "https://os-click-laser.mitosobr.workers.dev/upload",
+        `${URL_BASE}/upload`,
         {
             method: "POST",
             body: formData
         }
     );
 
-    const data = await res.json();
-    return data.url;
+    const data_pack = await res.json();
+    return data_pack.url;
 }
 
 
-function create_list_os_html(hora, tipo, origem, link) {
+function create_list_os_html(hora, tipo, origem, link, uid, data_json) {
     return `
                 <div>
-                    HORA
+                    <h3>HORA</h3>
                     <p>${hora}</p>
                 </div>
                 <div>
@@ -384,7 +439,7 @@ function create_list_os_html(hora, tipo, origem, link) {
                     <p>${tipo}</p>
                 </div>
                 <div>
-                    SITUAÇÃO
+                    <h3>SITUAÇÃO</h3>
                     <select name="status" class="select-os">
                         <option value="0" class="opt-os-0">Pedido aceito</option>
                         <option value="1" class="opt-os-1">Em produção</option>
@@ -392,14 +447,85 @@ function create_list_os_html(hora, tipo, origem, link) {
                         <option value="3" class="opt-os-3">Cancelado</option>
                     </select>
                 </div>
-                <div>
-                    ORIGEM
+                <div class="box_origem">
+                    <h3>ORIGEM</h3>
                     <p>${origem}</p>
                 </div>
+                <div class="box_btn_os">
                     <a class="fake-btn horizontal-div" href="${link}" target="_blank">
-                        <i class="bi bi-eye" style="color: white;"></i>
+                        <i class="bi bi-filetype-pdf" style="color: white;"></i>
                     </a>
+                </div>
     `
+}
+
+function visualizarDetalhes(uid, dados_os) {
+
+    if (!uid || !dados_os) {
+        alert("Dados da OS não encontrados.");
+        return;
+    }
+
+    // 2. Cria uma nova janela (Aba)
+    const novaJanela = window.open('', '_blank');
+
+    // 3. Recupera o dicionário de itens
+    const dadosItens = typeof os.data_json === 'string' ? JSON.parse(os.data_json) : os.data_json;
+
+    // 4. Monta o HTML interno (CSS idêntico ao que você usa no PDF)
+    let conteudoHtml = `
+        <html>
+        <head>
+            <title>Visualizar OS - ${os.uid}</title>
+            <style>
+                body { font-family: monospace; padding: 20px; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; }
+                .cupom { background: white; width: 300px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+                .linha { border-bottom: 1px dashed #000; margin: 10px 0; }
+                .divisor-item { text-align: center; font-weight: bold; margin: 20px 0; border: 1px solid #000; padding: 5px; }
+                p { margin: 5px 0; font-size: 14px; }
+            </style>
+        </head>
+        <body>
+            <div class="cupom">
+                <h2 style="text-align:center">DETALHES DA GRAVAÇÃO</h2>
+    `;
+
+    // 5. Itera sobre o dicionário (0, 1, 2...) para criar cada bloco
+    Object.keys(dadosItens).forEach((key, index) => {
+        const item = dadosItens[key];
+
+        if (index > 0) {
+            conteudoHtml += `
+                <div class="divisor-item">PRÓXIMA GRAVAÇÃO</div>
+            `;
+        }
+
+        // Aqui usamos a mesma estrutura do seu create_print_html original
+        conteudoHtml += `
+            <div class="item-bloco">
+                <p><strong>DATA:</strong> ${item.date} ${item.time}</p>
+                <p><strong>ITEM:</strong> ${item.item}</p>
+                <p><strong>NOME:</strong> ${item.name}</p>
+                <p><strong>FONTE:</strong> ${item.font}</p>
+                <p><strong>FIGURA:</strong> ${item.figure}</p>
+                <p><strong>ENTREGA:</strong> ${item.delivery}</p>
+                <p><strong>OBS:</strong> ${item.obs}</p>
+                <p><strong>ORIGEM:</strong> ${item.origin}</p>
+            </div>
+            <div class="linha"></div>
+        `;
+    });
+
+    conteudoHtml += `
+            </div>
+            <br>
+            <button onclick="window.print()">Imprimir Novamente</button>
+        </body>
+        </html>
+    `;
+
+    novaJanela.document.write(conteudoHtml);
+    novaJanela.document.close();
 }
 
 async function buscarOSPorData() {
@@ -435,7 +561,9 @@ async function buscarOSPorData() {
             os.hour,
             tipo,
             os.origin,
-            os.link_pdf
+            os.link_pdf,
+            os.uid,
+            os.data_json
         );
 
         box_os.innerHTML = html;
@@ -452,7 +580,7 @@ async function buscarOSPorData() {
 
             try {
                 const res = await fetch(
-                    "https://os-click-laser.mitosobr.workers.dev/update-status",
+                    `${URL_BASE}/update-status`,
                     {
                         method: "POST",
                         headers: {
@@ -488,7 +616,7 @@ async function listarOS(dataSelecionada) {
 
     try {
         const res = await fetch(
-            `https://os-click-laser.mitosobr.workers.dev/list?date=${dataSelecionada}`
+            `${URL_BASE}/list?date=${dataSelecionada}`
         );
 
         if (!res.ok) {
