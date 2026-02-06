@@ -453,6 +453,75 @@ button:hover {
     display: none;
 }
 
+
+
+
+/* =========================
+   PAGE LOADER
+========================= */
+.page_loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg_color_page);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    /* Acima de tudo (inclusive modais) */
+    transition: all 0.5s ease-in-out;
+}
+
+/* Quando o loader sumir */
+.page_loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.loader_content p {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    color: var(--text_color_muted);
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* O Spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--shadow_color_light);
+    border-top: 3px solid var(--acent_color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
 @media print {
     @page {
         margin: 0;

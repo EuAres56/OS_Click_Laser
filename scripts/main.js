@@ -100,6 +100,7 @@ function create_print_html(p_data, p_hora, p_item, p_fig, p_fonte, p_entrega, p_
 
 // IMPRIME OS UNICA
 function print_single() {
+    hideLoader();
     const print_area = document.getElementById('printArea');
 
     const inputNome = document.getElementById('nome');
@@ -162,11 +163,14 @@ function print_single() {
     console.log("Dados de OS:", dados);
     // Agora enviamos o objeto 'dados' como quarto parâmetro
     gerarPDFdoHTML("single", print_area, orig, dados);
+    hideLoader();
 }
 
 
 /* GERAR PACOTE */
 function print_pack() {
+    hideLoader();
+
     const print_area = document.getElementById('printArea');
 
     // Captura data e hora
@@ -265,7 +269,7 @@ function print_pack() {
 
     gerarPDFdoHTML("pack", print_area, orig, dados);
 
-
+    hideLoader();
 }
 
 
@@ -643,5 +647,13 @@ async function listarOS(dataSelecionada) {
         console.error(err);
         alert("Erro ao consultar os serviços");
         return [];
+    }
+}
+
+
+function hideLoader() {
+    const loader = document.getElementById('page_loader');
+    if (loader) {
+        loader.classList.toggle('hidden');
     }
 }
