@@ -460,12 +460,14 @@ button:hover {
    PAGE LOADER
 ========================= */
 .page_loader {
-    position: fixed;
+    opacity: 1;
+    visibility: visible !important;
+    position: fixed ! important;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--bg_color_page);
+    background: var(--bg-main);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -490,7 +492,7 @@ button:hover {
 .loader_content p {
     font-size: 0.9rem;
     letter-spacing: 1px;
-    color: var(--text_color_muted);
+    color: var(--purple);
     animation: pulse 1.5s infinite ease-in-out;
 }
 
@@ -498,8 +500,8 @@ button:hover {
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid var(--shadow_color_light);
-    border-top: 3px solid var(--acent_color);
+    border: 3px solid var(--purple-main);
+    border-top: 3px solid var(--purple-accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }

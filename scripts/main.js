@@ -268,8 +268,6 @@ function print_pack() {
     // 🔽 AQUI: converte esse HTML pronto em PDF e imprime
 
     gerarPDFdoHTML("pack", print_area, orig, dados);
-
-    hideLoader();
 }
 
 
@@ -653,7 +651,9 @@ async function listarOS(dataSelecionada) {
 
 function hideLoader() {
     const loader = document.getElementById('page_loader');
+    console.log("loader iniciado");
     if (loader) {
+        console.log("loader alterado");
         loader.classList.toggle('hidden');
     }
 }
