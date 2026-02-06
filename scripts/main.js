@@ -452,6 +452,9 @@ function create_list_os_html(hora, tipo, origem, link, uid, data_json) {
                     <p>${origem}</p>
                 </div>
                 <div class="box_btn_os">
+                    <button class="fake-btn horizontal-div" onclick='visualizarDetalhes("${uid}", ${JSON.stringify(data_json)})'>
+                        <i class="bi bi-eye" style="color: white;"></i>
+                    </button>
                     <a class="fake-btn horizontal-div" href="${link}" target="_blank">
                         <i class="bi bi-filetype-pdf" style="color: white;"></i>
                     </a>
@@ -460,66 +463,76 @@ function create_list_os_html(hora, tipo, origem, link, uid, data_json) {
 }
 
 function visualizarDetalhes(uid, dados_os) {
-
     if (!uid || !dados_os) {
         alert("Dados da OS não encontrados.");
         return;
     }
 
-    // 2. Cria uma nova janela (Aba)
+    // 1. Tenta converter para objeto se for uma string
+    let dadosItens;
+    try {
+        dadosItens = typeof dados_os === 'string' ? JSON.parse(dados_os) : dados_os;
+    } catch (e) {
+        console.error("Erro ao processar JSON:", e);
+        alert("Erro ao ler os detalhes da OS.");
+        return;
+    }
+
+    // 2. Cria uma nova janela
     const novaJanela = window.open('', '_blank');
 
-    // 3. Recupera o dicionário de itens
-    const dadosItens = typeof os.data_json === 'string' ? JSON.parse(os.data_json) : os.data_json;
-
-    // 4. Monta o HTML interno (CSS idêntico ao que você usa no PDF)
+    // 3. Monta o HTML
     let conteudoHtml = `
         <html>
         <head>
-            <title>Visualizar OS - ${os.uid}</title>
+            <title>Visualizar OS - ${uid}</title>
             <style>
-                body { font-family: monospace; padding: 20px; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; }
-                .cupom { background: white; width: 300px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-                .linha { border-bottom: 1px dashed #000; margin: 10px 0; }
-                .divisor-item { text-align: center; font-weight: bold; margin: 20px 0; border: 1px solid #000; padding: 5px; }
-                p { margin: 5px 0; font-size: 14px; }
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; }
+                .cupom { background: white; width: 350px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
+                .linha { border-bottom: 1px dashed #ccc; margin: 15px 0; }
+                .divisor-item { text-align: center; font-weight: bold; margin: 20px 0; border: 1px solid #000; padding: 5px; background: #eee; }
+                .item-bloco p { margin: 8px 0; font-size: 14px; line-height: 1.4; }
+                strong { color: #333; }
+                .btn-print { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+                @media print { .btn-print { display: none; } }
             </style>
         </head>
         <body>
             <div class="cupom">
-                <h2 style="text-align:center">DETALHES DA GRAVAÇÃO</h2>
+                <h2 style="text-align:center; margin-bottom:0;">DETALHES DA OS</h2>
+                <p style="text-align:center; font-size:11px; color: #666;">ID: ${uid}</p>
+                <div class="linha"></div>
     `;
 
-    // 5. Itera sobre o dicionário (0, 1, 2...) para criar cada bloco
-    Object.keys(dadosItens).forEach((key, index) => {
-        const item = dadosItens[key];
+    // 4. Itera sobre o dicionário (0, 1, 2...)
+    // Usamos Object.values para pegar os objetos dentro de "0", "1", etc.
+    const listaItens = Object.values(dadosItens);
 
+    listaItens.forEach((item, index) => {
         if (index > 0) {
-            conteudoHtml += `
-                <div class="divisor-item">PRÓXIMA GRAVAÇÃO</div>
-            `;
+            conteudoHtml += `<div class="divisor-item">PRÓXIMA GRAVAÇÃO</div>`;
         }
 
-        // Aqui usamos a mesma estrutura do seu create_print_html original
         conteudoHtml += `
             <div class="item-bloco">
-                <p><strong>DATA:</strong> ${item.date} ${item.time}</p>
+                <p><strong>DATA/HORA:</strong> ${item.date} às ${item.time}</p>
+                <p><strong>ORIGEM:</strong> ${item.origin}</p>
+                <p><strong>ENTREGA:</strong> ${item.delivery}</p>
+                <div class="linha"></div>
                 <p><strong>ITEM:</strong> ${item.item}</p>
-                <p><strong>NOME:</strong> ${item.name}</p>
+                <p><strong>NOME:</strong> <span style="font-size:18px; font-weight:bold;">${item.name}</span></p>
                 <p><strong>FONTE:</strong> ${item.font}</p>
                 <p><strong>FIGURA:</strong> ${item.figure}</p>
-                <p><strong>ENTREGA:</strong> ${item.delivery}</p>
                 <p><strong>OBS:</strong> ${item.obs}</p>
-                <p><strong>ORIGEM:</strong> ${item.origin}</p>
             </div>
-            <div class="linha"></div>
         `;
     });
 
     conteudoHtml += `
+                <div class="linha"></div>
+                <p style="text-align:center; font-size:10px;">OS Click Laser - Produção</p>
             </div>
-            <br>
-            <button onclick="window.print()">Imprimir Novamente</button>
+            <button class="btn-print" onclick="window.print()">Imprimir Via de Produção</button>
         </body>
         </html>
     `;
