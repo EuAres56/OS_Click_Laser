@@ -451,11 +451,11 @@ function create_list_os_html(hora, tipo, origem, link, uid, data_json) {
                     <h3>ORIGEM</h3>
                     <p>${origem}</p>
                 </div>
-                <div class="box_btn_os">
-                    <button class="fake-btn horizontal-div" onclick='visualizarDetalhes("${uid}", ${JSON.stringify(data_json)})'>
+                <div class="box_btn_os horizontal-div">
+                    <button class="fake-btn" onclick='visualizarDetalhes("${uid}", ${JSON.stringify(data_json)})'>
                         <i class="bi bi-eye" style="color: white;"></i>
                     </button>
-                    <a class="fake-btn horizontal-div" href="${link}" target="_blank">
+                    <a class="fake-btn" href="${link}" target="_blank">
                         <i class="bi bi-filetype-pdf" style="color: white;"></i>
                     </a>
                 </div>
