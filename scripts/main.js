@@ -99,175 +99,149 @@ function create_print_html(p_data, p_hora, p_item, p_fig, p_fonte, p_entrega, p_
 }
 
 // IMPRIME OS UNICA
-function print_single() {
-    hideLoader();
-    const print_area = document.getElementById('printArea');
+async function print_single() {
+    // 1. Força a exibição do loader antes de tudo
+    const loader = document.getElementById('page_loader');
+    if (loader) loader.classList.remove('hidden');
 
-    const inputNome = document.getElementById('nome');
-    const nome = inputNome.value;
+    // 2. Aguarda um microssegundo para o navegador renderizar o loader
+    setTimeout(async () => {
+        try {
+            const print_area = document.getElementById('printArea');
+            const inputNome = document.getElementById('nome');
+            const nome = inputNome.value;
 
-    if (!nome.trim()) {
-        alert("Por favor, preencha o nome para gravação.");
-        inputNome.focus();
-        return;
-    }
+            if (!nome.trim()) {
+                alert("Por favor, preencha o nome para gravação.");
+                inputNome.focus();
+                if (loader) loader.classList.add('hidden'); // Esconde se der erro
+                return;
+            }
 
-    // Captura data e hora
-    const agora = new Date();
-    const data = agora.toLocaleDateString('pt-br');
-    const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-br');
+            const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
 
-    // Alimenta o cupom
-    const item = document.getElementById('item').value;
-    const fonte = document.getElementById('fonte').value;
-    const entrega = (document.getElementById('dataEntrega').value).split('-').reverse().join('/') || data;
-    const figura = document.getElementById('figura').value || "NENHUMA";
-    const obs = document.getElementById('obs').value || "-";
-    const orig = document.getElementById('origem').value;
+            const item = document.getElementById('item').value;
+            const fonte = document.getElementById('fonte').value;
+            const entrega = (document.getElementById('dataEntrega').value).split('-').reverse().join('/') || data;
+            const figura = document.getElementById('figura').value || "NENHUMA";
+            const obs = document.getElementById('obs').value || "-";
+            const orig = document.getElementById('origem').value;
 
-    // --- NOVA LÓGICA DE DICIONÁRIO ---
-    let dados = {};
-    let conteudo = {
-        "date": data,
-        "time": hora,
-        "item": item,
-        "figure": figura,
-        "font": fonte,
-        "delivery": entrega,
-        "name": nome,
-        "obs": obs,
-        "origin": orig
-    };
+            let dados = {};
+            let conteudo = {
+                "date": data, "time": hora, "item": item, "figure": figura,
+                "font": fonte, "delivery": entrega, "name": nome, "obs": obs, "origin": orig
+            };
+            dados[0] = conteudo;
 
-    console.log(conteudo);
-    // Adiciona como o primeiro item (índice 0)
-    dados[0] = conteudo;
-    console.log(dados);
-    // ---------------------------------
+            let html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+            html += `
+                <div class="linha"></div><div class="linha"></div>
+                <div class="os-footer">
+                    <canvas id="qrcode"></canvas>
+                    <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
+                </div>
+            `;
 
-    // Gera o HTML com os dados capturados
-    let html = create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+            print_area.innerHTML = html;
 
-    html += `
-        <div class="linha"></div>
-        <div class="linha"></div>
+            // Espera o processo de PDF e nuvem terminar
+            await gerarPDFdoHTML("single", print_area, orig, dados);
 
-        <div class="os-footer">
-            <canvas id="qrcode"></canvas>
-            <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
-        </div>
-    `;
-
-    print_area.innerHTML = html;
-
-    console.log("Dados de OS:", dados);
-    // Agora enviamos o objeto 'dados' como quarto parâmetro
-    gerarPDFdoHTML("single", print_area, orig, dados);
-    hideLoader();
+        } catch (error) {
+            console.error("Erro no processamento:", error);
+            alert("Ocorreu um erro ao gerar a OS.");
+        } finally {
+            // 3. Esconde o loader quando o processo termina (mesmo se houver erro)
+            if (loader) loader.classList.add('hidden');
+        }
+    }, 150); // Delay de 150ms para garantir o "repaint"
 }
 
 
 /* GERAR PACOTE */
-function print_pack() {
-    hideLoader();
+async function print_pack() {
+    // 1. Força a exibição do loader
+    const loader = document.getElementById('page_loader');
+    if (loader) loader.classList.remove('hidden');
 
-    const print_area = document.getElementById('printArea');
+    setTimeout(async () => {
+        try {
+            const print_area = document.getElementById('printArea');
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-br');
+            const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
 
-    // Captura data e hora
-    const agora = new Date();
-    const data = agora.toLocaleDateString('pt-br');
-    const hora = agora.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
+            const item = document.getElementById('itemPack').value;
+            const fonte = document.getElementById('fontePack').value;
+            const entrega = (document.getElementById('dataEntregaPack').value).split('-').reverse().join('/') || data;
+            const figura = document.getElementById('figuraPack').value || "NENHUMA";
+            const obs = document.getElementById('obsPack').value || "-";
+            const orig = document.getElementById('origemPack').value;
 
-    // Alimenta o cupom (Preservando maiúsculas e minúsculas)
-    const item = document.getElementById('itemPack').value;
-    const fonte = document.getElementById('fontePack').value;
-    const entrega = (document.getElementById('dataEntregaPack').value).split('-').reverse().join('/') || data;
-    const figura = document.getElementById('figuraPack').value || "NENHUMA";
-    const obs = document.getElementById('obsPack').value || "-";
-    const orig = document.getElementById('origemPack').value;
+            const semNome = packSemNome.checked;
+            let html = '';
+            let dados = {};
+            let proximoId = 0;
 
-    const semNome = packSemNome.checked;
-    let html = '';
-    let dados = {};
-    let conteudo = {}
-    let proximoId = 0;
-
-    // Função para adicionar
-    function adicionarItem(conteudo) {
-        dados[proximoId] = conteudo;
-        proximoId++;
-    }
-
-
-    if (semNome) {
-        const num_garrafas = document.getElementById('qtdPack').value;
-        if (!num_garrafas || num_garrafas <= 0) {
-            alert("Informe a quantidade de garrafas.");
-            return;
-        }
-
-        const s_nome = "Gravações sem nome";
-        let obsv = `${num_garrafas} unidades sem nome`
-        if (obs != "-") {
-            obsv += "\n"
-            obsv += obs
-        }
-        html = create_print_html(data, hora, item, figura, fonte, entrega, s_nome, obsv, orig);
-        conteudo = { "date": data, "time": hora, "item": item, "figure": figura, "font": fonte, "delivery": entrega, "name": s_nome, "obs": obsv, "origin": orig };
-        adicionarItem(conteudo);
-    } else {
-        const nomes = document.getElementById('nomesPack').value;
-
-        let lista_nomes = nomes
-            .split(/\r?\n/)
-            .map(l => l.trim())
-            .filter(l => l);
-
-        lista_nomes.forEach(nome => {
-            if (html != '') {
-                html += `
-                    <div class="linha"></div>
-                    <p>PRÓXIMA GRAVAÇÃO</p>
-                    <div class="linha"></div>
-                `;
+            function adicionarItem(conteudo) {
+                dados[proximoId] = conteudo;
+                proximoId++;
             }
 
-            // 1. Gera o HTML
-            html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+            if (semNome) {
+                const num_garrafas = document.getElementById('qtdPack').value;
+                if (!num_garrafas || num_garrafas <= 0) {
+                    alert("Informe a quantidade de garrafas.");
+                    if (loader) loader.classList.add('hidden');
+                    return;
+                }
+                const s_nome = "Gravações sem nome";
+                let obsv = `${num_garrafas} unidades sem nome`;
+                if (obs != "-") obsv += "\n" + obs;
 
-            // 2. Cria o objeto com os dados CORRETOS (usando 'nome' e 'obs')
-            let conteudo = {
-                "date": data,
-                "time": hora,
-                "item": item,
-                "figure": figura,
-                "font": fonte,
-                "delivery": entrega,
-                "name": nome, // <--- Aqui usamos a variável 'nome' do loop
-                "obs": obs,   // <--- Aqui usamos a 'obs' capturada no início
-                "origin": orig
-            };
+                html = create_print_html(data, hora, item, figura, fonte, entrega, s_nome, obsv, orig);
+                adicionarItem({ "date": data, "time": hora, "item": item, "figure": figura, "font": fonte, "delivery": entrega, "name": s_nome, "obs": obsv, "origin": orig });
+            } else {
+                const nomes = document.getElementById('nomesPack').value;
+                let lista_nomes = nomes.split(/\r?\n/).map(l => l.trim()).filter(l => l);
 
-            // 3. Adiciona ao dicionário 'dados'
-            adicionarItem(conteudo);
-        });
-    }
+                if (lista_nomes.length === 0) {
+                    alert("Insira pelo menos um nome ou marque 'Sem nomes'.");
+                    if (loader) loader.classList.add('hidden');
+                    return;
+                }
 
-    // ... (resto do código: innerHTML, gerarPDFdoHTML, etc)
+                lista_nomes.forEach(nome => {
+                    if (html != '') {
+                        html += `<div class="linha"></div><p>PRÓXIMA GRAVAÇÃO</p><div class="linha"></div>`;
+                    }
+                    html += create_print_html(data, hora, item, figura, fonte, entrega, nome, obs, orig);
+                    adicionarItem({ "date": data, "time": hora, "item": item, "figure": figura, "font": fonte, "delivery": entrega, "name": nome, "obs": obs, "origin": orig });
+                });
+            }
 
-    html += `
-        <div class="linha"></div>
-        <div class="linha"></div>
+            html += `
+                <div class="linha"></div><div class="linha"></div>
+                <div class="os-footer">
+                    <canvas id="qrcode"></canvas>
+                    <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
+                </div>
+            `;
+            print_area.innerHTML = html;
 
-        <div class="os-footer">
-            <canvas id="qrcode"></canvas>
-            <p id="linkPDF" style="font-size:10px; word-break: break-all;"></p>
-        </div>
-    `
-    print_area.innerHTML = html;
-    // 🔽 AQUI: converte esse HTML pronto em PDF e imprime
+            await gerarPDFdoHTML("pack", print_area, orig, dados);
 
-    gerarPDFdoHTML("pack", print_area, orig, dados);
+        } catch (error) {
+            console.error("Erro no pacote:", error);
+            alert("Erro ao processar o pacote.");
+        } finally {
+            // 3. Esconde o loader ao final
+            if (loader) loader.classList.add('hidden');
+        }
+    }, 150);
 }
 
 
@@ -645,15 +619,5 @@ async function listarOS(dataSelecionada) {
         console.error(err);
         alert("Erro ao consultar os serviços");
         return [];
-    }
-}
-
-
-function hideLoader() {
-    const loader = document.getElementById('page_loader');
-    console.log("loader iniciado");
-    if (loader) {
-        console.log("loader alterado");
-        loader.classList.toggle('hidden');
     }
 }
