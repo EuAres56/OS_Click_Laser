@@ -331,19 +331,22 @@ async function gerarPDFdoHTML(tipo, print_area, origem, dados) {
     const nomeArquivo = `${tipo}_${dd}_${mm}_${yyyy}__${hh}_${min}.pdf`;
 
     const opt = {
-        margin: 8,
+        margin: [8, 8, 15, 8], // Margem maior no bottom (15mm) ajuda a evitar cortes
         filename: nomeArquivo,
         image: { type: "jpeg", quality: 1 },
         html2canvas: {
             scale: 2,
             useCORS: true,
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            letterRendering: true,
+            scrollY: 0
         },
         jsPDF: {
             unit: "mm",
             format: "a4",
             orientation: "portrait"
-        }
+        },
+        pagebreak: { mode: 'css' } // Usa as regras de CSS (como page-break-after)
     };
 
     const pdfBlob = await html2pdf()
@@ -351,7 +354,6 @@ async function gerarPDFdoHTML(tipo, print_area, origem, dados) {
         .from(printArea)
         .outputPdf("blob");
 
-    console.log(dados);
     const linkPDF = await enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem, dados);
 
     // 3. Gera o QR Code (AQUI 👇)
@@ -384,7 +386,6 @@ async function enviarPDFParaNuvem(pdfBlob, nomeArquivo, origem, data) {
 
     const tipo = nomeArquivo.startsWith("pack") ? "pack" : "single";
 
-    console.log("revisão de dados:", JSON.stringify(data));
     formData.append("type", tipo);
     formData.append("date", `${yyyy}-${mm}-${dd}`); // formato DATE válido
     formData.append("hour", `${hh}:${min}`);        // formato TIME válido

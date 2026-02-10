@@ -357,6 +357,10 @@ button:hover {
     min-height: auto;
     color: black;
     height: auto;
+
+    * {
+        color: black !important;
+    }
 }
 
 
