@@ -291,7 +291,6 @@ function carregarFontes() {
 // Aplica fonte no exemplo
 selectFonte.addEventListener("change", () => {
     exemplo.style.fontFamily = selectFonte.value;
-    exemplo.textContent = "Teste de Fonte Click Phone";
 });
 selectFonte_pack.addEventListener("change", () => {
     exemplo_pack.style.fontFamily = selectFonte_pack.value;
