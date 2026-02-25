@@ -295,7 +295,6 @@ selectFonte.addEventListener("change", () => {
 });
 selectFonte_pack.addEventListener("change", () => {
     exemplo_pack.style.fontFamily = selectFonte_pack.value;
-    exemplo_pack.textContent = "Teste de Fonte Click Phone";
 });
 
 // Inicializa
@@ -622,3 +621,12 @@ async function listarOS(dataSelecionada) {
         return [];
     }
 }
+
+
+document.addEventListener("input", e => {
+    const element = e.target;
+
+    if (element.classList.contains("input-nome")) {
+        document.getElementById("ex_text").innerText = element.value;
+    }
+})
