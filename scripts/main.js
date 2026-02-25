@@ -627,6 +627,10 @@ document.addEventListener("input", e => {
     const element = e.target;
 
     if (element.classList.contains("input-nome")) {
-        document.getElementById("ex_text").innerText = element.value;
+        if (element.value.length > 0) {
+            document.getElementById("ex_text").innerText = element.value;
+        } else {
+            document.getElementById("ex_text").innerText = "Teste de fonte Click Phone";
+        }
     }
 })
